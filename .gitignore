@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.streamlit/secrets.toml
+config/
+*.json
+data/raw/
+data/cache/
