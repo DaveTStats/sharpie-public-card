@@ -659,6 +659,8 @@ else:
             pitch_score = value(selected, "pitch_mix_matchup_score", 0.0)
             pa_value = value(selected, "pa_path_relative_value_score", 0.0)
             odds_move = value(selected, "odds_movement", 0.0)
+            player_sample = value(selected, "player_history_sample", 0.0)
+            player_gap = value(selected, "player_history_gap", 0.0)
 
             st.markdown("### Sharpie's Notes")
             n1, n2 = st.columns(2)
@@ -667,6 +669,7 @@ else:
                     f"""
                     - **Lineup:** slot #{lineup_slot or '--'}, {projected_pa:.2f} projected PA, {selected.get('lineup_status', '--')}
                     - **Team trust:** {pct(trust_hit_rate)} hit rate, trust gap {team_gap:+.1%}
+                    - **Player history:** {player_sample:.0f} samples, model gap {player_gap:+.1%}
                     - **Pitch mix:** {selected.get('pitch_mix_primary_pitch', '--')} profile, score {pitch_score:+.3f}
                     - **PA Path:** relative score {pa_value:+.1f}, rank {selected.get('pa_path_relative_rank', '--')}
                     """
