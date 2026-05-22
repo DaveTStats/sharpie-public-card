@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parent
 SHARPIE_PICKS = ROOT / "data" / "processed" / "sharpie_picks.csv"
 SHARPIE_WRITEUPS = ROOT / "data" / "processed" / "sharpie_writeups.csv"
 SHARPIE_RESULTS_PUBLIC = ROOT / "data" / "processed" / "sharpie_results_public.csv"
+PLAYER_LOOKUP = ROOT / "data" / "processed" / "sharpie_player_lookup_public.csv"
 
 
 st.set_page_config(page_title="Sharpie MLB Hit Card", page_icon="Sharpie", layout="wide")
@@ -359,6 +360,123 @@ def latest_date(frame: pd.DataFrame, column: str) -> str:
     return dates.max() if not dates.empty else dt.date.today().isoformat()
 
 
+def value(row: pd.Series, column: str, default: float = 0.0) -> float:
+    raw = row.get(column, default)
+    try:
+        parsed = float(raw)
+    except Exception:
+        return default
+    return default if pd.isna(parsed) else parsed
+
+
+def truthy(raw: object) -> bool:
+    return str(raw).strip().lower() in {"true", "1", "yes", "y"}
+
+
+def clamp(number: float, low: float, high: float) -> float:
+    return max(low, min(high, number))
+
+
+def odds_text(raw: object) -> str:
+    try:
+        odds = int(float(raw))
+    except Exception:
+        return "--"
+    return f"+{odds}" if odds > 0 else str(odds)
+
+
+def sharpie_lookup_score(row: pd.Series) -> tuple[float, float, list[str]]:
+    model_cols = [
+        "model_hit_probability",
+        "secondary_hit_probability",
+        "third_hit_probability",
+        "markov_hit_probability",
+        "edgestate_hit_probability",
+        "pa_path_hit_probability",
+        "swing_hit_probability",
+        "bookbias_model_probability",
+    ]
+    probs = [value(row, col, float("nan")) for col in model_cols]
+    probs = [p for p in probs if not pd.isna(p) and 0 < p < 1]
+    base = sum(probs) / len(probs) if probs else value(row, "model_hit_probability", 0.60)
+    adjustments: list[tuple[str, float]] = []
+
+    if truthy(row.get("confirmed_lineup")):
+        adjustments.append(("Confirmed lineup", 0.012))
+    else:
+        adjustments.append(("Lineup still projected", -0.035))
+
+    slot = int(value(row, "actual_batting_order", value(row, "batting_order", 0)))
+    if 1 <= slot <= 3:
+        adjustments.append((f"Premium lineup slot #{slot}", 0.010))
+    elif 4 <= slot <= 5:
+        adjustments.append((f"Strong lineup slot #{slot}", 0.004))
+    elif 7 <= slot <= 9:
+        adjustments.append((f"Lower-order slot #{slot}", -0.025))
+
+    trust_gap = value(row, "team_trust_gap", 0.0)
+    if trust_gap:
+        adjustments.append(("Team trust gap", clamp(trust_gap, -0.04, 0.04) * 0.45))
+    trust_picks = value(row, "team_trust_picks", 0.0)
+    if trust_picks >= 20 and abs(trust_gap) < 0.03:
+        adjustments.append(("Team profile has been stable", 0.008))
+
+    pitch_score = value(row, "pitch_mix_matchup_score", 0.0)
+    if pitch_score:
+        adjustments.append(("Pitch-mix matchup", clamp(pitch_score, -0.04, 0.04) * 0.50))
+
+    bullpen_fatigue = value(row, "opponent_bullpen_fatigue_score", 0.50)
+    adjustments.append(("Bullpen fatigue context", clamp(bullpen_fatigue - 0.50, -0.50, 0.50) * 0.018))
+
+    odds_movement = value(row, "odds_movement", 0.0)
+    if odds_movement > 0:
+        adjustments.append(("Price moved cheaper than open", 0.008))
+    elif odds_movement < -25:
+        adjustments.append(("Price got more expensive", -0.006))
+
+    pa_value = value(row, "pa_path_relative_value_score", 0.0)
+    if pa_value > 25:
+        adjustments.append(("PA Path relative value", 0.012))
+    elif pa_value < -15:
+        adjustments.append(("Weak PA Path relative value", -0.012))
+
+    bookbias = str(row.get("bookbias_recommendation", "")).lower()
+    if "avoid" in bookbias or "pass" in bookbias:
+        adjustments.append(("BookBias caution", -0.018))
+    elif "bet" in bookbias or "watch" in bookbias:
+        adjustments.append(("BookBias support", 0.006))
+
+    swing = str(row.get("swing_recommendation", "")).lower()
+    if "watch" in swing or "bet" in swing or "b" in swing:
+        adjustments.append(("SwingState support", 0.010))
+
+    markov = str(row.get("markov_signal", "")).lower()
+    if "upgrade" in markov:
+        adjustments.append(("Markov upgrade", 0.010))
+    elif "downgrade" in markov:
+        adjustments.append(("Markov downgrade", -0.010))
+
+    total_adjustment = sum(delta for _, delta in adjustments)
+    score = clamp(base + total_adjustment, 0.10, 0.90)
+    drivers = [f"{name}: {delta:+.1%}" for name, delta in adjustments if abs(delta) >= 0.004]
+    return score, base, drivers
+
+
+def sharpie_lean(score: float, row: pd.Series) -> tuple[str, str]:
+    odds = value(row, "odds", 0.0)
+    implied = value(row, "implied_probability", 0.0)
+    edge = score - implied if implied else value(row, "edge", 0.0)
+    if score >= 0.68 and edge >= 0.05:
+        return "Strong Sharpie Look", "good"
+    if score >= 0.63 and edge >= 0.025:
+        return "Playable, Price Matters", "warn"
+    if odds < -240 and edge < 0.04:
+        return "Likely Hit, Price Is Heavy", "warn"
+    if score < 0.58 or edge < 0:
+        return "Pass / Caution", "bad"
+    return "Lean Only", "warn"
+
+
 def sharpie_performance(picks: pd.DataFrame, results: pd.DataFrame) -> pd.DataFrame:
     if picks.empty or results.empty or "actual_hit" not in results.columns:
         return picks.copy()
@@ -389,8 +507,11 @@ def sharpie_performance(picks: pd.DataFrame, results: pd.DataFrame) -> pd.DataFr
 picks = read_csv(SHARPIE_PICKS)
 writeups = read_csv(SHARPIE_WRITEUPS)
 results = read_csv(SHARPIE_RESULTS_PUBLIC)
+lookup = read_csv(PLAYER_LOOKUP)
 
 run_date = latest_date(picks, "pick_date")
+if (not lookup.empty) and (picks.empty or run_date == dt.date.today().isoformat()):
+    run_date = latest_date(lookup, "lookup_date")
 today = picks[picks.get("pick_date", pd.Series(dtype=str)).astype(str).eq(str(run_date))].copy() if not picks.empty else pd.DataFrame()
 today = today.sort_values("sharpie_rank") if "sharpie_rank" in today.columns else today
 perf = sharpie_performance(picks, results)
@@ -459,6 +580,91 @@ else:
         if str(row.get("sharpie_team_context", "")).strip():
             st.markdown(f"**Team context:** {row.get('sharpie_team_context', '')}")
         st.divider()
+
+st.markdown("## Ask Sharpie About A Batter")
+st.caption("Search today's public player board by last name or full name. Sharpie's score blends the models with lineup, team trust, matchup, PA path, market, and form context.")
+if lookup.empty:
+    st.info("Today's batter lookup file has not been published yet.")
+else:
+    latest_lookup_date = latest_date(lookup, "lookup_date")
+    lookup_today = lookup[lookup.get("lookup_date", pd.Series(dtype=str)).astype(str).eq(str(latest_lookup_date))].copy()
+    if lookup_today.empty:
+        lookup_today = lookup.copy()
+    query = st.text_input("Batter name", placeholder="Example: Judge, Ohtani, Tatis")
+    if query.strip():
+        needle = query.strip().lower()
+        names = lookup_today.get("player", pd.Series(dtype=str)).astype(str).str.lower()
+        matches = lookup_today[names.str.contains(needle, na=False)].copy()
+        if matches.empty:
+            st.warning("Sharpie could not find that player on today's board. Try a shorter last-name search.")
+        else:
+            matches = matches.sort_values(["confirmed_lineup", "player"], ascending=[False, True]).reset_index(drop=True)
+            labels = []
+            for idx, row in matches.iterrows():
+                lineup = "confirmed" if truthy(row.get("confirmed_lineup")) else str(row.get("lineup_status", "projected") or "projected")
+                labels.append(
+                    f"{row.get('player', '')} | {row.get('team', '')} vs {row.get('opponent', '')} | "
+                    f"DK {odds_text(row.get('odds'))} | {lineup}"
+                )
+            selected_label = st.selectbox("Select the batter", labels)
+            selected = matches.iloc[labels.index(selected_label)]
+            sharpie_score, model_blend, drivers = sharpie_lookup_score(selected)
+            lean, lean_class = sharpie_lean(sharpie_score, selected)
+            implied = value(selected, "implied_probability", 0.0)
+            sharpie_edge = sharpie_score - implied if implied else float("nan")
+
+            st.markdown(
+                f"""
+                <div class="pick">
+                  <div class="label">{selected.get('team', '')} vs {selected.get('opponent', '')} | Opposing pitcher: {selected.get('opposing_pitcher', '--')}</div>
+                  <div class="big">{selected.get('player', '')} <span class="{lean_class}">{pct(sharpie_score)}</span></div>
+                  <div>DraftKings odds: <strong>{odds_text(selected.get('odds'))}</strong> | Sharpie read: <strong class="{lean_class}">{lean}</strong></div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            s1, s2, s3, s4 = st.columns(4)
+            s1.metric("Sharpie Probability", pct(sharpie_score))
+            s2.metric("Model Blend", pct(model_blend))
+            s3.metric("Market Implied", pct(implied))
+            s4.metric("Sharpie Edge", pct(sharpie_edge))
+
+            lineup_slot = int(value(selected, "actual_batting_order", value(selected, "batting_order", 0)))
+            projected_pa = value(selected, "actual_projected_pa", value(selected, "projected_pa", 0.0))
+            team_gap = value(selected, "team_trust_gap", 0.0)
+            trust_hit_rate = value(selected, "team_trust_hit_rate", float("nan"))
+            pitch_score = value(selected, "pitch_mix_matchup_score", 0.0)
+            pa_value = value(selected, "pa_path_relative_value_score", 0.0)
+            odds_move = value(selected, "odds_movement", 0.0)
+
+            st.markdown("### Sharpie's Notes")
+            n1, n2 = st.columns(2)
+            with n1:
+                st.markdown(
+                    f"""
+                    - **Lineup:** slot #{lineup_slot or '--'}, {projected_pa:.2f} projected PA, {selected.get('lineup_status', '--')}
+                    - **Team trust:** {pct(trust_hit_rate)} hit rate, trust gap {team_gap:+.1%}
+                    - **Pitch mix:** {selected.get('pitch_mix_primary_pitch', '--')} profile, score {pitch_score:+.3f}
+                    - **PA Path:** relative score {pa_value:+.1f}, rank {selected.get('pa_path_relative_rank', '--')}
+                    """
+                )
+            with n2:
+                st.markdown(
+                    f"""
+                    - **Market:** open {odds_text(selected.get('opening_odds'))}, current {odds_text(selected.get('odds'))}, move {odds_move:+.0f}
+                    - **BookBias:** {selected.get('bookbias_recommendation', '--')}
+                    - **SwingState:** {selected.get('swing_recommendation', '--')}
+                    - **Regime:** {selected.get('markov_signal', '--')} / {selected.get('edgestate_signal', '--')}
+                    """
+                )
+            if drivers:
+                st.markdown("**What moved Sharpie's score away from the raw model blend:** " + "; ".join(drivers[:8]))
+            key_reason = str(selected.get("bookbias_key_reason", "") or selected.get("swing_key_reason", "") or "").strip()
+            if key_reason:
+                st.markdown(f"**Extra read:** {key_reason}")
+    else:
+        st.info("Type a batter name above and Sharpie will pull up today's DraftKings price and his adjusted read.")
 
 if not writeups.empty:
     writeup_today = writeups[writeups.get("writeup_date", pd.Series(dtype=str)).astype(str).eq(str(run_date))].copy()
