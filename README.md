@@ -16,6 +16,7 @@ requirements.txt
 data/processed/sharpie_picks.csv
 data/processed/sharpie_writeups.csv
 data/processed/sharpie_results_public.csv
+data/processed/sharpie_player_lookup_public.csv
 ```
 
 If copying from the main MLB model repo, copy:
