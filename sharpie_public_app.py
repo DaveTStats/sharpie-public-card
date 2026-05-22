@@ -481,6 +481,8 @@ def sharpie_performance(picks: pd.DataFrame, results: pd.DataFrame) -> pd.DataFr
     if picks.empty or results.empty or "actual_hit" not in results.columns:
         return picks.copy()
     left = picks.copy()
+    if "bet_status" in left.columns:
+        left = left[~left["bet_status"].astype(str).str.lower().eq("hold")].copy()
     right = results.copy()
     for frame, date_col in [(left, "pick_date"), (right, "pick_date")]:
         frame["date_key"] = frame.get(date_col, "").astype(str)
@@ -552,18 +554,22 @@ st.caption("Informational model output only. Betting involves risk. Odds and lin
 if today.empty:
     st.warning("Sharpie has not published a card yet for the latest available date.")
 else:
-    allocated = pd.to_numeric(today.get("allocation", pd.Series(dtype=float)), errors="coerce").sum()
+    status = today.get("bet_status", pd.Series("Locked", index=today.index)).fillna("Locked").astype(str)
+    locked_today = today[~status.str.lower().eq("hold")].copy()
+    hold_today = today[status.str.lower().eq("hold")].copy()
+    allocated = pd.to_numeric(locked_today.get("allocation", pd.Series(dtype=float)), errors="coerce").sum()
+    reserved = pd.to_numeric(hold_today.get("reserved_allocation", pd.Series(dtype=float)), errors="coerce").sum()
     cash_held = pd.to_numeric(today.get("sharpie_cash_held", pd.Series(dtype=float)), errors="coerce").max()
-    expected_profit = pd.to_numeric(today.get("sharpie_expected_profit", pd.Series(dtype=float)), errors="coerce").sum()
+    expected_profit = pd.to_numeric(locked_today.get("sharpie_expected_profit", pd.Series(dtype=float)), errors="coerce").sum()
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.markdown(f'<div class="card"><div class="label">Picks</div><div class="big">{len(today)}</div></div>', unsafe_allow_html=True)
+    c1.markdown(f'<div class="card"><div class="label">Locked / Holds</div><div class="big">{len(locked_today)} / {len(hold_today)}</div></div>', unsafe_allow_html=True)
     c2.markdown(f'<div class="card"><div class="label">Allocated</div><div class="big">{money(allocated)}</div></div>', unsafe_allow_html=True)
-    c3.markdown(f'<div class="card"><div class="label">Cash Held</div><div class="big">{money(cash_held)}</div></div>', unsafe_allow_html=True)
+    c3.markdown(f'<div class="card"><div class="label">Reserved / Cash</div><div class="big">{money(reserved)} / {money(cash_held)}</div></div>', unsafe_allow_html=True)
     c4.markdown(f'<div class="card"><div class="label">Projected EV</div><div class="big good">{money(expected_profit)}</div></div>', unsafe_allow_html=True)
 
     st.markdown("## Today's Sharpie Card")
-    for _, row in today.iterrows():
+    for _, row in locked_today.iterrows():
         st.markdown(
             f"""
             <div class="pick">
@@ -580,6 +586,22 @@ else:
         if str(row.get("sharpie_team_context", "")).strip():
             st.markdown(f"**Team context:** {row.get('sharpie_team_context', '')}")
         st.divider()
+    if not hold_today.empty:
+        st.markdown("## Hold Spots")
+        for _, row in hold_today.iterrows():
+            st.markdown(
+                f"""
+                <div class="card">
+                  <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | HOLD | {row.get('team', '')} vs {row.get('opponent', '')}</div>
+                  <div class="big">{row.get('player', '')} <span class="warn">{money(row.get('reserved_allocation'))}</span></div>
+                  <div>Odds: <strong>{row.get('odds', '--')}</strong> | Projected probability: <strong>{pct(row.get('sharpie_probability'))}</strong></div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            st.markdown(f"**Trigger:** {row.get('hold_trigger', '')}")
+            st.markdown(f"**Why hold it:** {row.get('sharpie_allocation_reason', '')}")
+            st.divider()
 
 st.markdown("## Ask Sharpie About A Batter")
 st.caption("Search today's public player board by last name or full name. Sharpie's score blends the models with lineup, team trust, matchup, PA path, market, and form context.")
