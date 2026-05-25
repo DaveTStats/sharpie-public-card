@@ -480,6 +480,14 @@ def sharpie_lean(score: float, row: pd.Series) -> tuple[str, str]:
 def sharpie_performance(picks: pd.DataFrame, results: pd.DataFrame) -> pd.DataFrame:
     if picks.empty or results.empty or "actual_hit" not in results.columns:
         return picks.copy()
+    if {"allocation", "profit", "roi", "sharpie_rank"}.issubset(results.columns):
+        out = results.copy()
+        out["actual_hit"] = pd.to_numeric(out.get("actual_hit"), errors="coerce")
+        out["allocation"] = pd.to_numeric(out.get("allocation"), errors="coerce")
+        out["odds"] = pd.to_numeric(out.get("odds"), errors="coerce")
+        out["profit"] = pd.to_numeric(out.get("profit"), errors="coerce")
+        out["roi"] = pd.to_numeric(out.get("roi"), errors="coerce")
+        return out
     left = picks.copy()
     if "bet_status" in left.columns:
         left = left[~left["bet_status"].astype(str).str.lower().eq("hold")].copy()
@@ -726,5 +734,6 @@ else:
         "actual_hit",
         "actual_hits",
         "profit",
+        "roi",
     ]
     st.dataframe(resolved[[c for c in show_cols if c in resolved.columns]].sort_values(["pick_date", "sharpie_rank"], ascending=[False, True]), use_container_width=True, hide_index=True)
