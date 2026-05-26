@@ -10,6 +10,6 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-05-24,1,Ben Rice,NYY,TB,-183.0,21.0,Locked,0.0,0.0,-21.0,-1.0
 2026-05-24,2,Jonathan Aranda,TB,NYY,-154.0,39.0,Locked,1.0,1.0,25.324675324675326,0.6493506493506493
 2026-05-24,3,Brice Turang,MIL,LAD,-191.0,2.0,Locked,1.0,1.0,1.0471204188481675,0.5235602094240838
-2026-05-25,1,Michael Conforto,CHC,PIT,-155.0,21.0,Locked,,,,
-2026-05-25,2,Brice Turang,MIL,STL,-230.0,5.0,Locked,,,,
-2026-05-25,3,Alec Burleson,STL,MIL,-149.0,9.0,Locked,,,,
+2026-05-25,1,Michael Conforto,CHC,PIT,-155.0,21.0,Locked,0.0,0.0,-21.0,-1.0
+2026-05-25,2,Brice Turang,MIL,STL,-230.0,5.0,Locked,0.0,0.0,-5.0,-1.0
+2026-05-25,3,Alec Burleson,STL,MIL,-149.0,9.0,Locked,0.0,0.0,-9.0,-1.0
