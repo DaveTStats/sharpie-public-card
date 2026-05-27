@@ -13,6 +13,7 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-05-25,1,Michael Conforto,CHC,PIT,-155.0,21.0,Locked,0.0,0.0,-21.0,-1.0
 2026-05-25,2,Brice Turang,MIL,STL,-230.0,5.0,Locked,0.0,0.0,-5.0,-1.0
 2026-05-25,3,Alec Burleson,STL,MIL,-149.0,9.0,Locked,0.0,0.0,-9.0,-1.0
-2026-05-26,1,James Wood,WSH,CLE,-191.0,42.0,Locked,,,,
-2026-05-26,2,Joc Pederson,TEX,HOU,-145.0,35.0,Locked,,,,
-2026-05-26,3,Yordan Alvarez,HOU,TEX,-233.0,14.0,Locked,,,,
+2026-05-26,1,James Wood,WSH,CLE,-191.0,42.0,Locked,1.0,3.0,21.98952879581152,0.5235602094240838
+2026-05-26,2,Joc Pederson,TEX,HOU,-145.0,35.0,Locked,1.0,1.0,24.13793103448276,0.6896551724137931
+2026-05-26,3,Yordan Alvarez,HOU,TEX,-233.0,14.0,Locked,1.0,2.0,6.008583690987125,0.42918454935622324
+2026-05-27,1,James Wood,WSH,CLE,-170.0,60.0,Locked,,,,
