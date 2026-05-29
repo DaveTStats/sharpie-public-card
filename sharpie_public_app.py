@@ -12,6 +12,7 @@ SHARPIE_PICKS = ROOT / "data" / "processed" / "sharpie_picks.csv"
 SHARPIE_WRITEUPS = ROOT / "data" / "processed" / "sharpie_writeups.csv"
 SHARPIE_RESULTS_PUBLIC = ROOT / "data" / "processed" / "sharpie_results_public.csv"
 PLAYER_LOOKUP = ROOT / "data" / "processed" / "sharpie_player_lookup_public.csv"
+SHARPIE_EXCLUDED_PERFORMANCE_DATES = {"2026-05-23"}
 
 
 st.set_page_config(page_title="Sharpie MLB Hit Card", page_icon="Sharpie", layout="wide")
@@ -482,6 +483,8 @@ def sharpie_performance(picks: pd.DataFrame, results: pd.DataFrame) -> pd.DataFr
         return picks.copy()
     if {"allocation", "profit", "roi", "sharpie_rank"}.issubset(results.columns):
         out = results.copy()
+        if "pick_date" in out.columns:
+            out = out[~out["pick_date"].astype(str).isin(SHARPIE_EXCLUDED_PERFORMANCE_DATES)].copy()
         out["actual_hit"] = pd.to_numeric(out.get("actual_hit"), errors="coerce")
         out["allocation"] = pd.to_numeric(out.get("allocation"), errors="coerce")
         out["odds"] = pd.to_numeric(out.get("odds"), errors="coerce")
@@ -491,6 +494,12 @@ def sharpie_performance(picks: pd.DataFrame, results: pd.DataFrame) -> pd.DataFr
     left = picks.copy()
     if "bet_status" in left.columns:
         left = left[~left["bet_status"].astype(str).str.lower().eq("hold")].copy()
+    allocation = pd.to_numeric(left.get("allocation", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    first_dates = sorted(left.loc[allocation.gt(0), "pick_date"].dropna().astype(str).unique().tolist()) if "pick_date" in left.columns else []
+    if len(first_dates) > 1:
+        left = left[left["pick_date"].astype(str).ge(first_dates[1])].copy()
+    if "pick_date" in left.columns:
+        left = left[~left["pick_date"].astype(str).isin(SHARPIE_EXCLUDED_PERFORMANCE_DATES)].copy()
     right = results.copy()
     for frame, date_col in [(left, "pick_date"), (right, "pick_date")]:
         frame["date_key"] = frame.get(date_col, "").astype(str)
