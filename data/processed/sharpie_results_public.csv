@@ -22,6 +22,6 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-05-30,1,Kevin McGonigle,DET,CWS,-189.0,34.0,Locked,1.0,1.0,17.989417989417987,0.5291005291005291
 2026-05-30,2,Riley Greene,DET,CWS,-173.0,14.0,Locked,1.0,1.0,8.092485549132949,0.5780346820809249
 2026-05-30,3,Yordan Alvarez,HOU,MIL,-222.0,7.0,Locked,1.0,2.0,3.1531531531531534,0.45045045045045046
-2026-05-31,1,Wilyer Abreu,BOS,CLE,-178.0,15.0,Locked,,,,
-2026-05-31,2,Yordan Alvarez,HOU,MIL,-171.0,30.0,Locked,,,,
-2026-05-31,3,Taylor Ward,BAL,TOR,-151.0,15.0,Locked,,,,
+2026-05-31,1,Wilyer Abreu,BOS,CLE,-178.0,15.0,Locked,1.0,2.0,8.426966292134832,0.5617977528089888
+2026-05-31,2,Yordan Alvarez,HOU,MIL,-171.0,30.0,Locked,0.0,0.0,-30.0,-1.0
+2026-05-31,3,Taylor Ward,BAL,TOR,-151.0,15.0,Locked,0.0,0.0,-15.0,-1.0
