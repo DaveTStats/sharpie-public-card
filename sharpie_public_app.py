@@ -49,6 +49,52 @@ st.markdown(
         background: linear-gradient(135deg, rgba(255,106,0,.13), rgba(8,15,25,.86));
         box-shadow: inset 0 0 25px rgba(255,106,0,.08);
     }
+    .pick.locked {
+        border-color: rgba(98,210,111,.72);
+        background: linear-gradient(135deg, rgba(98,210,111,.15), rgba(8,15,25,.90));
+        box-shadow: 0 0 24px rgba(98,210,111,.12), inset 0 0 25px rgba(98,210,111,.08);
+    }
+    .hold-card {
+        border: 1px dashed rgba(255,191,63,.72);
+        border-radius: 16px;
+        padding: 20px;
+        background: linear-gradient(135deg, rgba(255,191,63,.10), rgba(8,15,25,.82));
+        box-shadow: inset 0 0 20px rgba(255,191,63,.06);
+    }
+    .status-badge {
+        display: inline-block;
+        margin-left: 10px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: .78rem;
+        font-weight: 950;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        vertical-align: middle;
+    }
+    .status-locked {
+        color: #7dff8e;
+        border: 1px solid rgba(98,210,111,.80);
+        background: rgba(98,210,111,.18);
+        box-shadow: 0 0 16px rgba(98,210,111,.20);
+    }
+    .status-hold {
+        color: #ffcf6f;
+        border: 1px solid rgba(255,191,63,.75);
+        background: rgba(255,191,63,.14);
+    }
+    .status-explainer {
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: rgba(5, 12, 21, .68);
+        margin: 18px 0;
+    }
+    .money-muted {
+        color: #94a3b8;
+        font-size: 1rem;
+        font-weight: 800;
+    }
     .label { color: #aab6c5; font-size: .78rem; text-transform: uppercase; letter-spacing: .09em; }
     .big { font-size: 1.9rem; font-weight: 900; }
     .accent { color: #ffbf3f; }
@@ -559,7 +605,7 @@ st.markdown(
       <div class="sharpie-bubbles">
         <div class="sharpie-bubble"><strong>I don't guess.</strong><br>I calculate the card.</div>
         <div class="sharpie-bubble"><strong>Profit first.</strong><br>0-3 picks. Cash can stay on the bench.</div>
-        <div class="sharpie-bubble"><strong>Today:</strong><br>Watching odds, lineups, model agreement, and ROI.</div>
+        <div class="sharpie-bubble"><strong>Today:</strong><br>Green locked bets count. Gold holds are watchlist only.</div>
       </div>
     </div>
     """,
@@ -585,18 +631,33 @@ else:
     c3.markdown(f'<div class="card"><div class="label">Reserved / Cash</div><div class="big">{money(reserved)} / {money(cash_held)}</div></div>', unsafe_allow_html=True)
     c4.markdown(f'<div class="card"><div class="label">Projected EV</div><div class="big good">{money(expected_profit)}</div></div>', unsafe_allow_html=True)
 
+    st.markdown(
+        """
+        <div class="status-explainer">
+          <strong><span class="status-badge status-locked">LOCKED</span></strong>
+          means Sharpie has committed real bankroll and this pick is tracked.
+          <br>
+          <strong><span class="status-badge status-hold">HOLD</span></strong>
+          means watchlist only: no bet is committed, the player can still be dropped, and the shown reserve is only planned exposure if conditions improve.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     st.markdown("## Today's Sharpie Card")
     for _, row in locked_today.iterrows():
         st.markdown(
             f"""
-            <div class="pick">
+            <div class="pick locked">
               <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | {row.get('team', '')} vs {row.get('opponent', '')}</div>
-              <div class="big">{row.get('player', '')} <span class="accent">{money(row.get('allocation'))}</span></div>
-              <div>Odds: <strong>{row.get('odds', '--')}</strong> | Probability: <strong>{pct(row.get('sharpie_probability'))}</strong> | EV/$: <strong>{pct(row.get('sharpie_ev_per_dollar'))}</strong></div>
+              <div class="big">{row.get('player', '')} <span class="accent">{money(row.get('allocation'))}</span><span class="status-badge status-locked">LOCKED</span></div>
+              <div>Bet committed: <strong>{money(row.get('allocation'))}</strong> | Odds: <strong>{row.get('odds', '--')}</strong> | Probability: <strong>{pct(row.get('sharpie_probability'))}</strong> | EV/$: <strong>{pct(row.get('sharpie_ev_per_dollar'))}</strong></div>
             </div>
             """,
             unsafe_allow_html=True,
         )
+        if str(row.get("lock_rule", "")).strip():
+            st.markdown(f"**Lock rule:** {row.get('lock_rule', '')}")
         st.markdown(f"**Why this amount:** {row.get('sharpie_allocation_reason', '')}")
         st.markdown(f"**Why Sharpie likes it:** {row.get('what_sharpie_likes', '')}")
         st.markdown(f"**Main concern:** {row.get('sharpie_concern', '')}")
@@ -608,14 +669,16 @@ else:
         for _, row in hold_today.iterrows():
             st.markdown(
                 f"""
-                <div class="card">
+                <div class="hold-card">
                   <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | HOLD | {row.get('team', '')} vs {row.get('opponent', '')}</div>
-                  <div class="big">{row.get('player', '')} <span class="warn">{money(row.get('reserved_allocation'))}</span></div>
-                  <div>Odds: <strong>{row.get('odds', '--')}</strong> | Projected probability: <strong>{pct(row.get('sharpie_probability'))}</strong></div>
+                  <div class="big">{row.get('player', '')} <span class="money-muted">$0 bet committed</span><span class="status-badge status-hold">HOLD</span></div>
+                  <div>Reserved if conditions improve: <strong class="warn">{money(row.get('reserved_allocation'))}</strong> | Current odds: <strong>{row.get('current_snapshot_odds', row.get('odds', '--'))}</strong> | Projected probability: <strong>{pct(row.get('sharpie_probability'))}</strong></div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+            if str(row.get("lock_rule", "")).strip():
+                st.markdown(f"**Hold status:** {row.get('lock_rule', '')}")
             st.markdown(f"**Trigger:** {row.get('hold_trigger', '')}")
             st.markdown(f"**Why hold it:** {row.get('sharpie_allocation_reason', '')}")
             st.divider()
