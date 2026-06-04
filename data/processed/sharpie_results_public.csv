@@ -31,6 +31,6 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-06-02,1,Ben Rice,NYY,CLE,-176.0,60.0,Locked,1.0,1.0,34.09090909090909,0.5681818181818182
 2026-06-02,2,Wilyer Abreu,BOS,BAL,-222.0,14.0,Locked,0.0,0.0,-14.0,-1.0
 2026-06-02,3,JJ Bleday,CIN,KC,-201.0,16.0,Locked,0.0,0.0,-16.0,-1.0
-2026-06-03,1,James Wood,WSH,MIA,-180.0,60.0,Locked,,,,
-2026-06-03,2,Yohendrick Piñango,TOR,ATL,-159.0,14.0,Locked,,,,
-2026-06-03,3,Chase DeLauter,CLE,NYY,-188.0,10.0,Locked,,,,
+2026-06-03,1,James Wood,WSH,MIA,-180.0,60.0,Locked,0.0,0.0,-60.0,-1.0
+2026-06-03,2,Yohendrick Piñango,TOR,ATL,-159.0,14.0,Locked,1.0,1.0,8.80503144654088,0.6289308176100629
+2026-06-03,3,Chase DeLauter,CLE,NYY,-188.0,10.0,Locked,0.0,0.0,-10.0,-1.0
