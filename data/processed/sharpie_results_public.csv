@@ -55,6 +55,6 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-06-12,1,James Wood,WSH,SEA,-212.0,35.0,Locked,1.0,2.0,16.50943396226415,0.4716981132075472
 2026-06-12,2,Sam Antonacci,CWS,LAD,-213.0,29.0,Locked,1.0,1.0,13.615023474178404,0.4694835680751174
 2026-06-12,3,Ben Rice,NYY,TOR,-212.0,10.0,Locked,0.0,0.0,-10.0,-1.0
-2026-06-13,1,Sam Antonacci,CWS,LAD,-180.0,60.0,Locked,,,,
-2026-06-13,2,James Wood,WSH,SEA,-221.0,1.0,Locked,,,,
-2026-06-13,3,Miguel Vargas,CWS,LAD,-195.0,2.0,Locked,,,,
+2026-06-13,1,Sam Antonacci,CWS,LAD,-180.0,60.0,Locked,0.0,0.0,-60.0,-1.0
+2026-06-13,2,James Wood,WSH,SEA,-221.0,1.0,Locked,1.0,1.0,0.45248868778280543,0.45248868778280543
+2026-06-13,3,Miguel Vargas,CWS,LAD,-195.0,2.0,Locked,0.0,0.0,-2.0,-1.0
