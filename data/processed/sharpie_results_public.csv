@@ -63,6 +63,6 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-06-14,3,Bryce Harper,PHI,MIL,-165.0,4.0,Locked,0.0,0.0,-4.0,-1.0
 2026-06-15,1,Kyle Schwarber,PHI,MIA,-195.0,60.0,Locked,1.0,1.0,30.769230769230766,0.5128205128205128
 2026-06-15,2,Max Muncy (ATH),ATH,PIT,-183.0,14.0,Locked,1.0,1.0,7.650273224043716,0.546448087431694
-2026-06-16,1,Sam Antonacci,CWS,NYY,-188.0,60.0,Locked,,,,
-2026-06-16,2,Wilyer Abreu,BOS,TOR,-162.0,14.0,Locked,,,,
-2026-06-16,3,Trevor Larnach,MIN,TEX,-153.0,9.0,Locked,,,,
+2026-06-16,1,Sam Antonacci,CWS,NYY,-188.0,60.0,Locked,1.0,1.0,31.914893617021278,0.5319148936170213
+2026-06-16,2,Wilyer Abreu,BOS,TOR,-162.0,14.0,Locked,0.0,0.0,-14.0,-1.0
+2026-06-16,3,Trevor Larnach,MIN,TEX,-153.0,9.0,Locked,1.0,4.0,5.882352941176471,0.6535947712418301
