@@ -516,15 +516,35 @@ def odds_text(raw: object) -> str:
     return f"+{odds}" if odds > 0 else str(odds)
 
 
-def roi_edge_latest_locked_targets() -> tuple[pd.DataFrame, str]:
+def roi_edge_latest_targets() -> tuple[pd.DataFrame, str]:
+    current, current_label = read_latest_csv("roi_edge_current_card_*.csv")
     locked, label = read_latest_csv("roi_edge_locked_card_*.csv")
+
+    locked_keys: set[str] = set()
+    if not locked.empty:
+        locked = locked.copy()
+        if "roi_edge_key" in locked.columns:
+            locked_keys = set(locked["roi_edge_key"].dropna().astype(str))
+
+    if not current.empty:
+        current = current.copy()
+        current["display_roi_rank"] = pd.to_numeric(current.get("roi_edge_card_pick"), errors="coerce")
+        targets = current[current["display_roi_rank"].isin([1, 3, 5])].copy()
+        if "roi_edge_key" in targets.columns:
+            targets["display_roi_status"] = targets["roi_edge_key"].astype(str).isin(locked_keys).map({True: "LOCKED", False: "HOLD"})
+        else:
+            targets["display_roi_status"] = "HOLD"
+        targets["display_roi_rank"] = targets["display_roi_rank"].astype("Int64")
+        return targets.sort_values("display_roi_rank"), current_label
+
     if locked.empty:
         return locked, label
-    locked = locked.copy()
+
     rank_col = "roi_edge_locked_rank" if "roi_edge_locked_rank" in locked.columns else "roi_edge_card_pick"
     locked[rank_col] = pd.to_numeric(locked.get(rank_col), errors="coerce")
     locked = locked[locked[rank_col].isin([1, 3, 5])].copy()
     locked["display_roi_rank"] = locked[rank_col].astype("Int64")
+    locked["display_roi_status"] = "LOCKED"
     return locked.sort_values("display_roi_rank"), label
 
 
@@ -560,36 +580,42 @@ def roi_edge_rank_performance() -> tuple[pd.DataFrame, pd.DataFrame, str]:
 
 
 def render_roi_edge_tab() -> None:
-    locked, locked_label = roi_edge_latest_locked_targets()
+    targets, target_label = roi_edge_latest_targets()
     rolling, summary, daily_label = roi_edge_rank_performance()
-    st.markdown("## Locked ROI Edge Top Ranks")
-    st.caption("Shows the frozen ROI Edge card players in the historically strongest rank slots: #1, #3, and #5.")
+    st.markdown("## ROI Edge Watchlist")
+    st.caption("Shows ROI Edge ranks #1, #3, and #5. Yellow HOLD means the player is not locked yet; green LOCKED means the snapshot is frozen.")
 
-    if locked.empty:
-        st.info("No locked ROI Edge #1/#3/#5 players are available yet. This fills once the ROI Edge lock file is published.")
+    if targets.empty:
+        st.info("No ROI Edge #1/#3/#5 players are available yet. This fills once today's ROI Edge current card is published.")
     else:
-        st.markdown(f"<div class='label'>Latest locked card source: {locked_label}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='label'>Latest ROI Edge source: {target_label}</div>", unsafe_allow_html=True)
         cols = st.columns(3)
         for idx, rank in enumerate([1, 3, 5]):
-            rows = locked[locked["display_roi_rank"].eq(rank)]
+            rows = targets[targets["display_roi_rank"].eq(rank)]
             with cols[idx]:
                 if rows.empty:
                     st.markdown(
                         f"""
                         <div class="roi-card">
                           <div class="roi-rank">ROI Edge Rank #{rank}</div>
-                          <div class="big">Not Locked</div>
-                          <div style="color:#aab6c5;">This rank is either not on the latest locked card yet or rotated before lock.</div>
+                          <div class="big">No Current Player</div>
+                          <div style="color:#aab6c5;">This rank is not on the current ROI Edge watchlist.</div>
                         </div>
                         """,
                         unsafe_allow_html=True,
                     )
                     continue
                 row = rows.iloc[0]
+                status = str(row.get("display_roi_status", "HOLD")).upper()
+                badge_class = "status-locked" if status == "LOCKED" else "status-hold"
+                lineup_status = str(row.get("lineup_status", "") or "")
+                reason = row.get("roi_edge_lock_reason", "")
+                if status != "LOCKED":
+                    reason = f"Hold: {lineup_status or 'not locked yet'}; locks only inside the lock window or after first pitch."
                 st.markdown(
                     f"""
                     <div class="roi-card">
-                      <div class="roi-rank">ROI Edge Rank #{rank} <span class="status-badge status-locked">LOCKED</span></div>
+                      <div class="roi-rank">ROI Edge Rank #{rank} <span class="status-badge {badge_class}">{status}</span></div>
                       <div class="big">{row.get('player', '')}</div>
                       <div>{row.get('team', '')} vs {row.get('opponent', '')} | DK <strong>{odds_text(row.get('odds'))}</strong></div>
                       <div class="roi-metric-row">
@@ -597,7 +623,7 @@ def render_roi_edge_tab() -> None:
                         <div class="roi-mini"><div class="label">Avg Model</div><div class="value">{pct(row.get('model_prob_avg'))}</div></div>
                         <div class="roi-mini"><div class="label">Edge</div><div class="value">{pct(row.get('avg_model_edge', row.get('edge')))}</div></div>
                       </div>
-                      <div style="margin-top:10px;color:#aab6c5;font-size:.92rem;">{row.get('roi_edge_lock_reason', 'Locked ROI Edge candidate')}</div>
+                      <div style="margin-top:10px;color:#aab6c5;font-size:.92rem;">{reason}</div>
                     </div>
                     """,
                     unsafe_allow_html=True,
