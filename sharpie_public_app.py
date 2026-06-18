@@ -532,26 +532,39 @@ def render_roi_edge_tab() -> None:
         st.info("No locked ROI Edge #1/#3/#5 players are available yet. This fills once the ROI Edge lock file is published.")
     else:
         st.markdown(f"<div class='label'>Latest locked card source: {locked_label}</div>", unsafe_allow_html=True)
-        st.markdown("<div class='roi-grid'>", unsafe_allow_html=True)
-        for _, row in locked.iterrows():
-            rank = int(value(row, "display_roi_rank", value(row, "roi_edge_card_pick", 0)))
-            st.markdown(
-                f"""
-                <div class="roi-card">
-                  <div class="roi-rank">ROI Edge Rank #{rank} <span class="status-badge status-locked">LOCKED</span></div>
-                  <div class="big">{row.get('player', '')}</div>
-                  <div>{row.get('team', '')} vs {row.get('opponent', '')} | DK <strong>{odds_text(row.get('odds'))}</strong></div>
-                  <div class="roi-metric-row">
-                    <div class="roi-mini"><div class="label">PA Path</div><div class="value">{pct(row.get('pa_path_hit_probability'))}</div></div>
-                    <div class="roi-mini"><div class="label">Avg Model</div><div class="value">{pct(row.get('model_prob_avg'))}</div></div>
-                    <div class="roi-mini"><div class="label">Edge</div><div class="value">{pct(row.get('avg_model_edge', row.get('edge')))}</div></div>
-                  </div>
-                  <div style="margin-top:10px;color:#aab6c5;font-size:.92rem;">{row.get('roi_edge_lock_reason', 'Locked ROI Edge candidate')}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        st.markdown("</div>", unsafe_allow_html=True)
+        cols = st.columns(3)
+        for idx, rank in enumerate([1, 3, 5]):
+            rows = locked[locked["display_roi_rank"].eq(rank)]
+            with cols[idx]:
+                if rows.empty:
+                    st.markdown(
+                        f"""
+                        <div class="roi-card">
+                          <div class="roi-rank">ROI Edge Rank #{rank}</div>
+                          <div class="big">Not Locked</div>
+                          <div style="color:#aab6c5;">This rank is either not on the latest locked card yet or rotated before lock.</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                    continue
+                row = rows.iloc[0]
+                st.markdown(
+                    f"""
+                    <div class="roi-card">
+                      <div class="roi-rank">ROI Edge Rank #{rank} <span class="status-badge status-locked">LOCKED</span></div>
+                      <div class="big">{row.get('player', '')}</div>
+                      <div>{row.get('team', '')} vs {row.get('opponent', '')} | DK <strong>{odds_text(row.get('odds'))}</strong></div>
+                      <div class="roi-metric-row">
+                        <div class="roi-mini"><div class="label">PA Path</div><div class="value">{pct(row.get('pa_path_hit_probability'))}</div></div>
+                        <div class="roi-mini"><div class="label">Avg Model</div><div class="value">{pct(row.get('model_prob_avg'))}</div></div>
+                        <div class="roi-mini"><div class="label">Edge</div><div class="value">{pct(row.get('avg_model_edge', row.get('edge')))}</div></div>
+                      </div>
+                      <div style="margin-top:10px;color:#aab6c5;font-size:.92rem;">{row.get('roi_edge_lock_reason', 'Locked ROI Edge candidate')}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
     st.markdown("## Rolling 10-Day Rank Results")
     if summary.empty:
