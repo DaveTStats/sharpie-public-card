@@ -12,6 +12,7 @@ SHARPIE_PICKS = ROOT / "data" / "processed" / "sharpie_picks.csv"
 SHARPIE_WRITEUPS = ROOT / "data" / "processed" / "sharpie_writeups.csv"
 SHARPIE_RESULTS_PUBLIC = ROOT / "data" / "processed" / "sharpie_results_public.csv"
 PLAYER_LOOKUP = ROOT / "data" / "processed" / "sharpie_player_lookup_public.csv"
+ANALYSIS_DIR = ROOT / "outputs" / "analysis"
 SHARPIE_EXCLUDED_PERFORMANCE_DATES = {"2026-05-23"}
 
 
@@ -101,6 +102,44 @@ st.markdown(
     .good { color: #62d26f; }
     .warn { color: #ffbf3f; }
     .bad { color: #ff5b6b; }
+    .roi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        margin: 18px 0;
+    }
+    .roi-card {
+        border: 1px solid rgba(98,210,111,.55);
+        border-radius: 16px;
+        padding: 18px;
+        background: linear-gradient(135deg, rgba(98,210,111,.13), rgba(8,15,25,.86));
+        box-shadow: 0 0 24px rgba(98,210,111,.10), inset 0 0 25px rgba(98,210,111,.06);
+        min-height: 210px;
+    }
+    .roi-rank {
+        color: #7dff8e;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: .10em;
+        font-size: .78rem;
+    }
+    .roi-metric-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        margin-top: 12px;
+    }
+    .roi-mini {
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 10px;
+        padding: 8px;
+        background: rgba(5, 12, 21, .58);
+    }
+    .roi-mini .value {
+        font-size: 1.15rem;
+        font-weight: 950;
+        color: #f8fafc;
+    }
     .sharpie-stage {
         position: relative;
         overflow: hidden;
@@ -373,6 +412,14 @@ def read_csv(path: Path) -> pd.DataFrame:
     return pd.read_csv(path)
 
 
+@st.cache_data(ttl=60)
+def read_latest_csv(pattern: str) -> tuple[pd.DataFrame, str]:
+    files = sorted(ANALYSIS_DIR.glob(pattern), key=lambda item: item.stat().st_mtime, reverse=True)
+    if not files:
+        return pd.DataFrame(), ""
+    return pd.read_csv(files[0]), files[0].stem
+
+
 def num(series: pd.Series | object, default: float = 0.0) -> pd.Series:
     if isinstance(series, pd.Series):
         return pd.to_numeric(series, errors="coerce").fillna(default)
@@ -430,6 +477,104 @@ def odds_text(raw: object) -> str:
     except Exception:
         return "--"
     return f"+{odds}" if odds > 0 else str(odds)
+
+
+def roi_edge_latest_locked_targets() -> tuple[pd.DataFrame, str]:
+    locked, label = read_latest_csv("roi_edge_locked_card_*.csv")
+    if locked.empty:
+        return locked, label
+    locked = locked.copy()
+    rank_col = "roi_edge_locked_rank" if "roi_edge_locked_rank" in locked.columns else "roi_edge_card_pick"
+    locked[rank_col] = pd.to_numeric(locked.get(rank_col), errors="coerce")
+    locked = locked[locked[rank_col].isin([1, 3, 5])].copy()
+    locked["display_roi_rank"] = locked[rank_col].astype("Int64")
+    return locked.sort_values("display_roi_rank"), label
+
+
+def roi_edge_rank_performance() -> tuple[pd.DataFrame, pd.DataFrame, str]:
+    daily, label = read_latest_csv("roi_edge_pa_path_rank_daily_*.csv")
+    if daily.empty:
+        return daily, pd.DataFrame(), label
+    daily = daily.copy()
+    daily["date_dt"] = pd.to_datetime(daily.get("date"), errors="coerce")
+    daily["roi_card_rank"] = pd.to_numeric(daily.get("roi_card_rank"), errors="coerce")
+    daily["actual_hit"] = pd.to_numeric(daily.get("actual_hit"), errors="coerce")
+    daily["profit"] = pd.to_numeric(daily.get("profit"), errors="coerce")
+    daily["odds"] = pd.to_numeric(daily.get("odds"), errors="coerce")
+    daily = daily[daily["roi_card_rank"].isin([1, 3, 5]) & daily["actual_hit"].isin([0, 1])].copy()
+    if daily.empty:
+        return daily, pd.DataFrame(), label
+    max_date = daily["date_dt"].max()
+    cutoff = max_date - pd.Timedelta(days=9)
+    rolling = daily[daily["date_dt"].ge(cutoff)].copy()
+    summary = (
+        rolling.groupby("roi_card_rank", as_index=False)
+        .agg(
+            picks=("actual_hit", "size"),
+            hits=("actual_hit", "sum"),
+            hit_rate=("actual_hit", "mean"),
+            profit=("profit", "sum"),
+            avg_odds=("odds", "mean"),
+        )
+        .sort_values("roi_card_rank")
+    )
+    summary["roi"] = summary["profit"] / summary["picks"].replace(0, pd.NA)
+    return rolling.sort_values(["date_dt", "roi_card_rank"], ascending=[False, True]), summary, label
+
+
+def render_roi_edge_tab() -> None:
+    locked, locked_label = roi_edge_latest_locked_targets()
+    rolling, summary, daily_label = roi_edge_rank_performance()
+    st.markdown("## Locked ROI Edge Top Ranks")
+    st.caption("Shows the frozen ROI Edge card players in the historically strongest rank slots: #1, #3, and #5.")
+
+    if locked.empty:
+        st.info("No locked ROI Edge #1/#3/#5 players are available yet. This fills once the ROI Edge lock file is published.")
+    else:
+        st.markdown(f"<div class='label'>Latest locked card source: {locked_label}</div>", unsafe_allow_html=True)
+        st.markdown("<div class='roi-grid'>", unsafe_allow_html=True)
+        for _, row in locked.iterrows():
+            rank = int(value(row, "display_roi_rank", value(row, "roi_edge_card_pick", 0)))
+            st.markdown(
+                f"""
+                <div class="roi-card">
+                  <div class="roi-rank">ROI Edge Rank #{rank} <span class="status-badge status-locked">LOCKED</span></div>
+                  <div class="big">{row.get('player', '')}</div>
+                  <div>{row.get('team', '')} vs {row.get('opponent', '')} | DK <strong>{odds_text(row.get('odds'))}</strong></div>
+                  <div class="roi-metric-row">
+                    <div class="roi-mini"><div class="label">PA Path</div><div class="value">{pct(row.get('pa_path_hit_probability'))}</div></div>
+                    <div class="roi-mini"><div class="label">Avg Model</div><div class="value">{pct(row.get('model_prob_avg'))}</div></div>
+                    <div class="roi-mini"><div class="label">Edge</div><div class="value">{pct(row.get('avg_model_edge', row.get('edge')))}</div></div>
+                  </div>
+                  <div style="margin-top:10px;color:#aab6c5;font-size:.92rem;">{row.get('roi_edge_lock_reason', 'Locked ROI Edge candidate')}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("## Rolling 10-Day Rank Results")
+    if summary.empty:
+        st.info("Rolling 10-day ROI Edge rank history is not available yet.")
+    else:
+        metric_cols = st.columns(3)
+        for idx, rank in enumerate([1, 3, 5]):
+            row = summary[summary["roi_card_rank"].eq(rank)]
+            if row.empty:
+                metric_cols[idx].metric(f"Rank #{rank}", "No sample")
+                continue
+            rec = row.iloc[0]
+            metric_cols[idx].metric(
+                f"Rank #{rank} Win Rate",
+                pct(rec.get("hit_rate")),
+                f"{int(rec.get('hits', 0))}/{int(rec.get('picks', 0))} | ROI {pct(rec.get('roi'))}",
+            )
+        display_cols = ["date", "roi_card_rank", "player", "team", "opponent", "odds", "pa_path_hit_probability", "actual_hit", "profit"]
+        st.dataframe(
+            rolling[[col for col in display_cols if col in rolling.columns]].head(60),
+            use_container_width=True,
+            hide_index=True,
+        )
 
 
 def sharpie_lookup_score(row: pd.Series) -> tuple[float, float, list[str]]:
@@ -614,74 +759,80 @@ st.markdown(
 
 st.caption("Informational model output only. Betting involves risk. Odds and lineups can move after this card is published.")
 
-if today.empty:
-    st.warning("Sharpie has not published a card yet for the latest available date.")
-else:
-    status = today.get("bet_status", pd.Series("Locked", index=today.index)).fillna("Locked").astype(str)
-    locked_today = today[~status.str.lower().eq("hold")].copy()
-    hold_today = today[status.str.lower().eq("hold")].copy()
-    allocated = pd.to_numeric(locked_today.get("allocation", pd.Series(dtype=float)), errors="coerce").sum()
-    reserved = pd.to_numeric(hold_today.get("reserved_allocation", pd.Series(dtype=float)), errors="coerce").sum()
-    cash_held = pd.to_numeric(today.get("sharpie_cash_held", pd.Series(dtype=float)), errors="coerce").max()
-    expected_profit = pd.to_numeric(locked_today.get("sharpie_expected_profit", pd.Series(dtype=float)), errors="coerce").sum()
+sharpie_tab, roi_tab = st.tabs(["Sharpie's Top 3", "Locked ROI Edge"])
 
-    c1, c2, c3, c4 = st.columns(4)
-    c1.markdown(f'<div class="card"><div class="label">Locked / Holds</div><div class="big">{len(locked_today)} / {len(hold_today)}</div></div>', unsafe_allow_html=True)
-    c2.markdown(f'<div class="card"><div class="label">Allocated</div><div class="big">{money(allocated)}</div></div>', unsafe_allow_html=True)
-    c3.markdown(f'<div class="card"><div class="label">Reserved / Cash</div><div class="big">{money(reserved)} / {money(cash_held)}</div></div>', unsafe_allow_html=True)
-    c4.markdown(f'<div class="card"><div class="label">Projected EV</div><div class="big good">{money(expected_profit)}</div></div>', unsafe_allow_html=True)
+with sharpie_tab:
+    if today.empty:
+        st.warning("Sharpie has not published a card yet for the latest available date.")
+    else:
+        status = today.get("bet_status", pd.Series("Locked", index=today.index)).fillna("Locked").astype(str)
+        locked_today = today[~status.str.lower().eq("hold")].copy()
+        hold_today = today[status.str.lower().eq("hold")].copy()
+        allocated = pd.to_numeric(locked_today.get("allocation", pd.Series(dtype=float)), errors="coerce").sum()
+        reserved = pd.to_numeric(hold_today.get("reserved_allocation", pd.Series(dtype=float)), errors="coerce").sum()
+        cash_held = pd.to_numeric(today.get("sharpie_cash_held", pd.Series(dtype=float)), errors="coerce").max()
+        expected_profit = pd.to_numeric(locked_today.get("sharpie_expected_profit", pd.Series(dtype=float)), errors="coerce").sum()
 
-    st.markdown(
-        """
-        <div class="status-explainer">
-          <strong><span class="status-badge status-locked">LOCKED</span></strong>
-          means Sharpie has committed real bankroll and this pick is tracked.
-          <br>
-          <strong><span class="status-badge status-hold">HOLD</span></strong>
-          means watchlist only: no bet is committed, the player can still be dropped, and the shown reserve is only planned exposure if conditions improve.
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        c1, c2, c3, c4 = st.columns(4)
+        c1.markdown(f'<div class="card"><div class="label">Locked / Holds</div><div class="big">{len(locked_today)} / {len(hold_today)}</div></div>', unsafe_allow_html=True)
+        c2.markdown(f'<div class="card"><div class="label">Allocated</div><div class="big">{money(allocated)}</div></div>', unsafe_allow_html=True)
+        c3.markdown(f'<div class="card"><div class="label">Reserved / Cash</div><div class="big">{money(reserved)} / {money(cash_held)}</div></div>', unsafe_allow_html=True)
+        c4.markdown(f'<div class="card"><div class="label">Projected EV</div><div class="big good">{money(expected_profit)}</div></div>', unsafe_allow_html=True)
 
-    st.markdown("## Today's Sharpie Card")
-    for _, row in locked_today.iterrows():
         st.markdown(
-            f"""
-            <div class="pick locked">
-              <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | {row.get('team', '')} vs {row.get('opponent', '')}</div>
-              <div class="big">{row.get('player', '')} <span class="accent">{money(row.get('allocation'))}</span><span class="status-badge status-locked">LOCKED</span></div>
-              <div>Bet committed: <strong>{money(row.get('allocation'))}</strong> | Odds: <strong>{row.get('odds', '--')}</strong> | Probability: <strong>{pct(row.get('sharpie_probability'))}</strong> | EV/$: <strong>{pct(row.get('sharpie_ev_per_dollar'))}</strong></div>
+            """
+            <div class="status-explainer">
+              <strong><span class="status-badge status-locked">LOCKED</span></strong>
+              means Sharpie has committed real bankroll and this pick is tracked.
+              <br>
+              <strong><span class="status-badge status-hold">HOLD</span></strong>
+              means watchlist only: no bet is committed, the player can still be dropped, and the shown reserve is only planned exposure if conditions improve.
             </div>
             """,
             unsafe_allow_html=True,
         )
-        if str(row.get("lock_rule", "")).strip():
-            st.markdown(f"**Lock rule:** {row.get('lock_rule', '')}")
-        st.markdown(f"**Why this amount:** {row.get('sharpie_allocation_reason', '')}")
-        st.markdown(f"**Why Sharpie likes it:** {row.get('what_sharpie_likes', '')}")
-        st.markdown(f"**Main concern:** {row.get('sharpie_concern', '')}")
-        if str(row.get("sharpie_team_context", "")).strip():
-            st.markdown(f"**Team context:** {row.get('sharpie_team_context', '')}")
-        st.divider()
-    if not hold_today.empty:
-        st.markdown("## Hold Spots")
-        for _, row in hold_today.iterrows():
+
+        st.markdown("## Today's Sharpie Card")
+        for _, row in locked_today.iterrows():
             st.markdown(
                 f"""
-                <div class="hold-card">
-                  <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | HOLD | {row.get('team', '')} vs {row.get('opponent', '')}</div>
-                  <div class="big">{row.get('player', '')} <span class="money-muted">$0 bet committed</span><span class="status-badge status-hold">HOLD</span></div>
-                  <div>Reserved if conditions improve: <strong class="warn">{money(row.get('reserved_allocation'))}</strong> | Current odds: <strong>{row.get('current_snapshot_odds', row.get('odds', '--'))}</strong> | Projected probability: <strong>{pct(row.get('sharpie_probability'))}</strong></div>
+                <div class="pick locked">
+                  <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | {row.get('team', '')} vs {row.get('opponent', '')}</div>
+                  <div class="big">{row.get('player', '')} <span class="accent">{money(row.get('allocation'))}</span><span class="status-badge status-locked">LOCKED</span></div>
+                  <div>Bet committed: <strong>{money(row.get('allocation'))}</strong> | Odds: <strong>{row.get('odds', '--')}</strong> | Probability: <strong>{pct(row.get('sharpie_probability'))}</strong> | EV/$: <strong>{pct(row.get('sharpie_ev_per_dollar'))}</strong></div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
             if str(row.get("lock_rule", "")).strip():
-                st.markdown(f"**Hold status:** {row.get('lock_rule', '')}")
-            st.markdown(f"**Trigger:** {row.get('hold_trigger', '')}")
-            st.markdown(f"**Why hold it:** {row.get('sharpie_allocation_reason', '')}")
+                st.markdown(f"**Lock rule:** {row.get('lock_rule', '')}")
+            st.markdown(f"**Why this amount:** {row.get('sharpie_allocation_reason', '')}")
+            st.markdown(f"**Why Sharpie likes it:** {row.get('what_sharpie_likes', '')}")
+            st.markdown(f"**Main concern:** {row.get('sharpie_concern', '')}")
+            if str(row.get("sharpie_team_context", "")).strip():
+                st.markdown(f"**Team context:** {row.get('sharpie_team_context', '')}")
             st.divider()
+        if not hold_today.empty:
+            st.markdown("## Hold Spots")
+            for _, row in hold_today.iterrows():
+                st.markdown(
+                    f"""
+                    <div class="hold-card">
+                      <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | HOLD | {row.get('team', '')} vs {row.get('opponent', '')}</div>
+                      <div class="big">{row.get('player', '')} <span class="money-muted">$0 bet committed</span><span class="status-badge status-hold">HOLD</span></div>
+                      <div>Reserved if conditions improve: <strong class="warn">{money(row.get('reserved_allocation'))}</strong> | Current odds: <strong>{row.get('current_snapshot_odds', row.get('odds', '--'))}</strong> | Projected probability: <strong>{pct(row.get('sharpie_probability'))}</strong></div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                if str(row.get("lock_rule", "")).strip():
+                    st.markdown(f"**Hold status:** {row.get('lock_rule', '')}")
+                st.markdown(f"**Trigger:** {row.get('hold_trigger', '')}")
+                st.markdown(f"**Why hold it:** {row.get('sharpie_allocation_reason', '')}")
+                st.divider()
+
+with roi_tab:
+    render_roi_edge_tab()
 
 st.markdown("## Ask Sharpie About A Batter")
 st.caption("Search today's public player board by last name or full name. Sharpie's score blends the models with lineup, team trust, matchup, PA path, market, and form context.")
