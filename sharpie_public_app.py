@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+from pandas.errors import EmptyDataError
 
 
 ROOT = Path(__file__).resolve().parent
@@ -439,7 +440,10 @@ st.markdown(
 def read_csv(path: Path) -> pd.DataFrame:
     if not path.exists():
         return pd.DataFrame()
-    return pd.read_csv(path)
+    try:
+        return pd.read_csv(path)
+    except EmptyDataError:
+        return pd.DataFrame()
 
 
 @st.cache_data(ttl=60)
@@ -447,7 +451,10 @@ def read_latest_csv(pattern: str) -> tuple[pd.DataFrame, str]:
     files = sorted(ANALYSIS_DIR.glob(pattern), key=lambda item: item.stat().st_mtime, reverse=True)
     if not files:
         return pd.DataFrame(), ""
-    return pd.read_csv(files[0]), files[0].stem
+    try:
+        return pd.read_csv(files[0]), files[0].stem
+    except EmptyDataError:
+        return pd.DataFrame(), files[0].stem
 
 
 def num(series: pd.Series | object, default: float = 0.0) -> pd.Series:
