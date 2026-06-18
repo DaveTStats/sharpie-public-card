@@ -102,6 +102,36 @@ st.markdown(
     .good { color: #62d26f; }
     .warn { color: #ffbf3f; }
     .bad { color: #ff5b6b; }
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+        border-bottom: 0;
+        margin: 10px 0 18px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        border: 1px solid rgba(98,210,111,.62);
+        border-radius: 999px;
+        padding: 8px 18px;
+        min-height: 38px;
+        background: rgba(98,210,111,.12);
+        color: #d7ffe0;
+        font-weight: 950;
+        letter-spacing: .02em;
+        box-shadow: inset 0 0 16px rgba(98,210,111,.08);
+    }
+    .stTabs [data-baseweb="tab"] p {
+        color: #d7ffe0;
+        font-weight: 950;
+        font-size: .98rem;
+    }
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, rgba(98,210,111,.95), rgba(37,155,72,.88));
+        border-color: rgba(166,255,178,.95);
+        box-shadow: 0 0 22px rgba(98,210,111,.28), inset 0 0 18px rgba(255,255,255,.10);
+    }
+    .stTabs [aria-selected="true"] p {
+        color: #06130a;
+        text-shadow: none;
+    }
     .roi-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
