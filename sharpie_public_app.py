@@ -113,7 +113,7 @@ st.markdown(
     div[data-testid="stMetricLabel"],
     div[data-testid="stMetricLabel"] p,
     div[data-testid="stMetricLabel"] label {
-        color: #dbeafe !important;
+        color: #ffbf3f !important;
         font-weight: 850 !important;
         letter-spacing: .02em;
     }
@@ -128,6 +128,12 @@ st.markdown(
     div[data-testid="stCaptionContainer"],
     div[data-testid="stCaptionContainer"] p {
         color: #c7d2fe !important;
+    }
+    .tracked-performance-title,
+    .tracked-performance-title h2 {
+        color: #ffbf3f !important;
+        font-weight: 950 !important;
+        text-shadow: 0 0 16px rgba(255,191,63,.22);
     }
     .stTabs [data-baseweb="tab-list"] {
         gap: 10px;
@@ -1042,7 +1048,7 @@ if not writeups.empty:
         st.markdown(f"**Takeaway:** {latest.get('sharpie_takeaway', '')}")
         st.markdown(f"**Risk note:** {latest.get('risk_note', '')}")
 
-st.markdown("## Tracked Performance")
+st.markdown("<div class='tracked-performance-title'><h2>Tracked Performance</h2></div>", unsafe_allow_html=True)
 if resolved.empty:
     st.info("Resolved Sharpie results will appear here after games are graded.")
 else:
