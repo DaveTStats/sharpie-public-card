@@ -550,8 +550,9 @@ def roi_edge_latest_targets() -> tuple[pd.DataFrame, str]:
 
 def roi_edge_rank_performance() -> tuple[pd.DataFrame, pd.DataFrame, str]:
     daily, label = read_latest_csv("roi_edge_pa_path_rank_daily_*.csv")
+    all_time, _ = read_latest_csv("roi_edge_pa_path_rank_summary_*.csv")
     if daily.empty:
-        return daily, pd.DataFrame(), label
+        return daily, all_time, label
     daily = daily.copy()
     daily["date_dt"] = pd.to_datetime(daily.get("date"), errors="coerce")
     daily["roi_card_rank"] = pd.to_numeric(daily.get("roi_card_rank"), errors="coerce")
@@ -560,23 +561,28 @@ def roi_edge_rank_performance() -> tuple[pd.DataFrame, pd.DataFrame, str]:
     daily["odds"] = pd.to_numeric(daily.get("odds"), errors="coerce")
     daily = daily[daily["roi_card_rank"].isin([1, 3, 5]) & daily["actual_hit"].isin([0, 1])].copy()
     if daily.empty:
-        return daily, pd.DataFrame(), label
-    max_date = daily["date_dt"].max()
-    cutoff = max_date - pd.Timedelta(days=9)
-    rolling = daily[daily["date_dt"].ge(cutoff)].copy()
-    summary = (
-        rolling.groupby("roi_card_rank", as_index=False)
-        .agg(
-            picks=("actual_hit", "size"),
-            hits=("actual_hit", "sum"),
-            hit_rate=("actual_hit", "mean"),
-            profit=("profit", "sum"),
-            avg_odds=("odds", "mean"),
+        return daily, all_time, label
+    if all_time.empty:
+        all_time = (
+            daily.groupby("roi_card_rank", as_index=False)
+            .agg(
+                picks=("actual_hit", "size"),
+                hits=("actual_hit", "sum"),
+                hit_rate=("actual_hit", "mean"),
+                profit=("profit", "sum"),
+                avg_odds=("odds", "mean"),
+            )
+            .sort_values("roi_card_rank")
         )
-        .sort_values("roi_card_rank")
-    )
-    summary["roi"] = summary["profit"] / summary["picks"].replace(0, pd.NA)
-    return rolling.sort_values(["date_dt", "roi_card_rank"], ascending=[False, True]), summary, label
+        all_time["roi"] = all_time["profit"] / all_time["picks"].replace(0, pd.NA)
+    else:
+        all_time = all_time.copy()
+        all_time["roi_card_rank"] = pd.to_numeric(all_time.get("roi_card_rank"), errors="coerce")
+        for column in ["picks", "hits", "hit_rate", "profit", "roi", "avg_odds"]:
+            if column in all_time.columns:
+                all_time[column] = pd.to_numeric(all_time[column], errors="coerce")
+        all_time = all_time[all_time["roi_card_rank"].isin([1, 3, 5])].copy().sort_values("roi_card_rank")
+    return daily.sort_values(["date_dt", "roi_card_rank"], ascending=[False, True]), all_time, label
 
 
 def render_roi_edge_tab() -> None:
@@ -629,9 +635,9 @@ def render_roi_edge_tab() -> None:
                     unsafe_allow_html=True,
                 )
 
-    st.markdown("## Rolling 10-Day Rank Results")
+    st.markdown("## Historical Rank Results")
     if summary.empty:
-        st.info("Rolling 10-day ROI Edge rank history is not available yet.")
+        st.info("ROI Edge rank history is not available yet.")
     else:
         metric_cols = st.columns(3)
         for idx, rank in enumerate([1, 3, 5]):
@@ -641,10 +647,11 @@ def render_roi_edge_tab() -> None:
                 continue
             rec = row.iloc[0]
             metric_cols[idx].metric(
-                f"Rank #{rank} Win Rate",
+                f"Rank #{rank} All-Time",
                 pct(rec.get("hit_rate")),
                 f"{int(rec.get('hits', 0))}/{int(rec.get('picks', 0))} | ROI {pct(rec.get('roi'))}",
             )
+        st.caption(f"Source: {daily_label}. Recent table below shows the newest resolved ROI Edge rank picks.")
         display_cols = ["date", "roi_card_rank", "player", "team", "opponent", "odds", "pa_path_hit_probability", "actual_hit", "profit"]
         st.dataframe(
             rolling[[col for col in display_cols if col in rolling.columns]].head(60),
