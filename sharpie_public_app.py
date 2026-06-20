@@ -103,6 +103,32 @@ st.markdown(
     .good { color: #62d26f; }
     .warn { color: #ffbf3f; }
     .bad { color: #ff5b6b; }
+    div[data-testid="stMetric"],
+    div[data-testid="metric-container"] {
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: rgba(5, 12, 21, .66);
+    }
+    div[data-testid="stMetricLabel"],
+    div[data-testid="stMetricLabel"] p,
+    div[data-testid="stMetricLabel"] label {
+        color: #dbeafe !important;
+        font-weight: 850 !important;
+        letter-spacing: .02em;
+    }
+    div[data-testid="stMetricValue"],
+    div[data-testid="stMetricValue"] div {
+        color: #ffffff !important;
+        font-weight: 950 !important;
+        text-shadow: 0 0 12px rgba(255,191,63,.14);
+    }
+    div[data-testid="stMetricDelta"],
+    div[data-testid="stMetricDelta"] div,
+    div[data-testid="stCaptionContainer"],
+    div[data-testid="stCaptionContainer"] p {
+        color: #c7d2fe !important;
+    }
     .stTabs [data-baseweb="tab-list"] {
         gap: 10px;
         border-bottom: 0;
