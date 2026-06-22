@@ -13,6 +13,7 @@ SHARPIE_PICKS = ROOT / "data" / "processed" / "sharpie_picks.csv"
 SHARPIE_WRITEUPS = ROOT / "data" / "processed" / "sharpie_writeups.csv"
 SHARPIE_RESULTS_PUBLIC = ROOT / "data" / "processed" / "sharpie_results_public.csv"
 PLAYER_LOOKUP = ROOT / "data" / "processed" / "sharpie_player_lookup_public.csv"
+LIVE_BUYBACK_RANKINGS = ROOT / "data" / "processed" / "live_buyback_player_rankings.csv"
 ANALYSIS_DIR = ROOT / "outputs" / "analysis"
 SHARPIE_EXCLUDED_PERFORMANCE_DATES = {"2026-05-23"}
 
@@ -617,6 +618,34 @@ def roi_edge_rank_performance() -> tuple[pd.DataFrame, pd.DataFrame, str]:
     return daily.sort_values(["date_dt", "roi_card_rank"], ascending=[False, True]), all_time, label
 
 
+def live_buyback_board(run_date: str) -> pd.DataFrame:
+    today_path = ROOT / "data" / "processed" / f"live_buyback_watchlist_{run_date}.csv"
+    board = read_csv(today_path)
+    if board.empty:
+        board = read_csv(LIVE_BUYBACK_RANKINGS)
+    if board.empty:
+        return board
+    board = board.copy()
+    for column in [
+        "buyback_watch_score",
+        "buyback_score",
+        "bayes_recovery_hit_rate",
+        "recovery_hit_rate_after_0for1",
+        "fair_live_odds_after_0for1",
+        "current_dk_hit_odds",
+        "odds",
+        "pregame_to_0for1_fair_odds_move",
+        "first_pa_no_hit_games",
+        "avg_remaining_pa_after_0for1",
+        "today_lineup_slot",
+        "projected_pa",
+    ]:
+        if column in board.columns:
+            board[column] = pd.to_numeric(board[column], errors="coerce")
+    sort_col = "buyback_watch_score" if "buyback_watch_score" in board.columns else "buyback_score"
+    return board.sort_values(sort_col, ascending=False).head(5).copy()
+
+
 def render_roi_edge_tab() -> None:
     targets, target_label = roi_edge_latest_targets()
     rolling, summary, daily_label = roi_edge_rank_performance()
@@ -944,6 +973,41 @@ with sharpie_tab:
                     st.markdown(f"**Hold status:** {row.get('lock_rule', '')}")
                 st.markdown(f"**Trigger:** {row.get('hold_trigger', '')}")
                 st.markdown(f"**Why hold it:** {row.get('sharpie_allocation_reason', '')}")
+                st.divider()
+
+        st.markdown("## Late Hitter Buyback Watch")
+        st.caption("Live-bet reference only: if one of these hitters misses his first PA, compare DraftKings live odds to Sharpie's fair after-0-for-1 line.")
+        buyback = live_buyback_board(str(run_date))
+        if buyback.empty:
+            st.info("Late Hitter buyback watchlist has not been published yet.")
+        else:
+            metric_cols = st.columns(3)
+            metric_cols[0].markdown(f'<div class="card"><div class="label">Buyback Watch</div><div class="big">{len(buyback)}</div></div>', unsafe_allow_html=True)
+            metric_cols[1].markdown(f'<div class="card"><div class="label">Avg After 0-for-1</div><div class="big">{pct(buyback.get("bayes_recovery_hit_rate", pd.Series(dtype=float)).mean())}</div></div>', unsafe_allow_html=True)
+            metric_cols[2].markdown(f'<div class="card"><div class="label">Avg Fair Live Odds</div><div class="big">{odds_text(buyback.get("fair_live_odds_after_0for1", pd.Series(dtype=float)).mean())}</div></div>', unsafe_allow_html=True)
+            for rank, (_, row) in enumerate(buyback.iterrows(), start=1):
+                current_odds = row.get("current_dk_hit_odds", row.get("odds"))
+                fair_live = row.get("fair_live_odds_after_0for1")
+                slot = row.get("today_lineup_slot", row.get("avg_lineup_slot"))
+                slot_text = f"#{int(float(slot))}" if pd.notna(slot) else "--"
+                move = row.get("pregame_to_0for1_fair_odds_move")
+                move_text = f"{float(move):+.0f} cents" if pd.notna(move) else "--"
+                remaining = row.get("avg_remaining_pa_after_0for1")
+                remaining_text = f"{float(remaining):.1f}" if pd.notna(remaining) else "--"
+                samples = row.get("first_pa_no_hit_games")
+                samples_text = f"{int(float(samples))}" if pd.notna(samples) else "--"
+                st.markdown(
+                    f"""
+                    <div class="hold-card">
+                      <div class="label">Late Hitter #{rank} | {row.get('team', row.get('team_last', ''))} vs {row.get('opponent', '--')} | Slot {slot_text}</div>
+                      <div class="big">{row.get('player', '')} <span class="accent">Fair after 0-for-1: {odds_text(fair_live)}</span></div>
+                      <div>Current DK: <strong>{odds_text(current_odds)}</strong> | After 0-for-1 hit: <strong>{pct(row.get('bayes_recovery_hit_rate'))}</strong> | Raw recovery: <strong>{pct(row.get('recovery_hit_rate_after_0for1'))}</strong></div>
+                      <div style="color:#aab6c5;margin-top:6px;">Samples: {samples_text} | Avg remaining PA: {remaining_text} | Expected price move: {move_text}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                st.markdown(f"**Sharpie live trigger:** If DK is better than **{odds_text(fair_live)}** after the first miss, this becomes a live-bet candidate.")
                 st.divider()
 
 with roi_tab:
