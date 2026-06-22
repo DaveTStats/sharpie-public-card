@@ -639,17 +639,38 @@ def live_buyback_board(run_date: str) -> pd.DataFrame:
         "avg_remaining_pa_after_0for1",
         "today_lineup_slot",
         "projected_pa",
+        "sharpie_late_hitter_slot",
     ]:
         if column in board.columns:
             board[column] = pd.to_numeric(board[column], errors="coerce")
     sort_col = "buyback_watch_score" if "buyback_watch_score" in board.columns else "buyback_score"
-    if "confirmed_lineup" in board.columns:
-        board = board[board["confirmed_lineup"].astype(str).str.lower().isin(["true", "1", "1.0", "yes", "confirmed"])].copy()
-    elif "late_hitter_lock_status" in board.columns:
-        board = board[board["late_hitter_lock_status"].astype(str).str.upper().eq("LOCKED")].copy()
+    if "sharpie_late_hitter_reserved" in board.columns:
+        reserved = board["sharpie_late_hitter_reserved"].astype(str).str.lower().isin(["true", "1", "1.0", "yes"])
+        board = board[reserved].copy()
+        if "sharpie_late_hitter_slot" in board.columns:
+            return board.sort_values(["sharpie_late_hitter_slot", sort_col], ascending=[True, False]).head(5).copy()
+        return board.sort_values(sort_col, ascending=False).head(5).copy()
     else:
-        return pd.DataFrame()
-    return board.sort_values(sort_col, ascending=False).head(5).copy()
+        board = board.sort_values(sort_col, ascending=False).head(30).copy()
+        if "team" in board.columns and "opponent" in board.columns:
+            board["_game_key"] = board.apply(
+                lambda row: " vs ".join(sorted([str(row.get("team", "")), str(row.get("opponent", ""))])),
+                axis=1,
+            )
+            selected_indices = []
+            game_counts = {}
+            for idx, row in board.iterrows():
+                game_key = str(row.get("_game_key", ""))
+                if game_counts.get(game_key, 0) >= 2:
+                    continue
+                selected_indices.append(idx)
+                game_counts[game_key] = game_counts.get(game_key, 0) + 1
+                if len(selected_indices) == 5:
+                    break
+            if len(selected_indices) < 5:
+                selected_indices.extend([idx for idx in board.index if idx not in selected_indices][: 5 - len(selected_indices)])
+            return board.loc[selected_indices].copy()
+        return board.head(5).copy()
 
 
 def render_roi_edge_tab() -> None:
@@ -985,13 +1006,24 @@ with sharpie_tab:
         st.caption("Live-bet reference only: if one of these hitters misses his first PA, compare DraftKings live odds to Sharpie's fair after-0-for-1 line.")
         buyback = live_buyback_board(str(run_date))
         if buyback.empty:
-            st.info("No confirmed Late Hitter buyback targets are locked yet. This board fills as lineups confirm.")
+            st.info("No Late Hitter buyback reserve slots are available yet. This board fills from the top 30 after the buyback model runs.")
         else:
+            locked_count = (
+                int(buyback["late_hitter_lock_status"].astype(str).str.upper().eq("LOCKED").sum())
+                if "late_hitter_lock_status" in buyback.columns
+                else 0
+            )
+            hold_count = len(buyback) - locked_count
             metric_cols = st.columns(3)
-            metric_cols[0].markdown(f'<div class="card"><div class="label">Buyback Watch</div><div class="big">{len(buyback)}</div></div>', unsafe_allow_html=True)
+            metric_cols[0].markdown(f'<div class="card"><div class="label">Buyback Watch</div><div class="big">{len(buyback)}</div><div>{locked_count} locked / {hold_count} hold</div></div>', unsafe_allow_html=True)
             metric_cols[1].markdown(f'<div class="card"><div class="label">Avg After 0-for-1</div><div class="big">{pct(buyback.get("bayes_recovery_hit_rate", pd.Series(dtype=float)).mean())}</div></div>', unsafe_allow_html=True)
             metric_cols[2].markdown(f'<div class="card"><div class="label">Avg Fair Live Odds</div><div class="big">{odds_text(buyback.get("fair_live_odds_after_0for1", pd.Series(dtype=float)).mean())}</div></div>', unsafe_allow_html=True)
             for rank, (_, row) in enumerate(buyback.iterrows(), start=1):
+                display_rank = row.get("sharpie_late_hitter_slot", rank)
+                try:
+                    display_rank = int(float(display_rank))
+                except (TypeError, ValueError):
+                    display_rank = rank
                 current_odds = row.get("current_dk_hit_odds", row.get("odds"))
                 fair_live = row.get("fair_live_odds_after_0for1")
                 lock_status = str(row.get("late_hitter_lock_status", "LOCKED") or "LOCKED").upper()
@@ -1007,7 +1039,7 @@ with sharpie_tab:
                 st.markdown(
                     f"""
                     <div class="hold-card">
-                      <div class="label">Late Hitter #{rank} | {row.get('team', row.get('team_last', ''))} vs {row.get('opponent', '--')} | Slot {slot_text}</div>
+                      <div class="label">Late Hitter #{display_rank} | {row.get('team', row.get('team_last', ''))} vs {row.get('opponent', '--')} | Slot {slot_text}</div>
                       <div class="big">{row.get('player', '')} <span class="accent">Fair after 0-for-1: {odds_text(fair_live)}</span><span class="status-badge {badge_class}">{lock_status}</span></div>
                       <div>Current DK: <strong>{odds_text(current_odds)}</strong> | After 0-for-1 hit: <strong>{pct(row.get('bayes_recovery_hit_rate'))}</strong> | Raw recovery: <strong>{pct(row.get('recovery_hit_rate_after_0for1'))}</strong></div>
                       <div style="color:#aab6c5;margin-top:6px;">Samples: {samples_text} | Avg remaining PA: {remaining_text} | Expected price move: {move_text}</div>
