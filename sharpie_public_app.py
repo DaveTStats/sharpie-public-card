@@ -847,6 +847,9 @@ def sharpie_performance(picks: pd.DataFrame, results: pd.DataFrame) -> pd.DataFr
         out = results.copy()
         if "pick_date" in out.columns:
             out = out[~out["pick_date"].astype(str).isin(SHARPIE_EXCLUDED_PERFORMANCE_DATES)].copy()
+        status = out.get("bet_status", pd.Series("", index=out.index)).astype(str).str.lower()
+        rank_num = pd.to_numeric(out.get("sharpie_rank"), errors="coerce")
+        out = out[~status.eq("bonus late pick") & rank_num.between(1, 3, inclusive="both")].copy()
         out["actual_hit"] = pd.to_numeric(out.get("actual_hit"), errors="coerce")
         out["allocation"] = pd.to_numeric(out.get("allocation"), errors="coerce")
         out["odds"] = pd.to_numeric(out.get("odds"), errors="coerce")
@@ -855,7 +858,11 @@ def sharpie_performance(picks: pd.DataFrame, results: pd.DataFrame) -> pd.DataFr
         return out
     left = picks.copy()
     if "bet_status" in left.columns:
-        left = left[~left["bet_status"].astype(str).str.lower().eq("hold")].copy()
+        status = left["bet_status"].astype(str).str.lower()
+        left = left[~status.isin(["hold", "bonus late pick"])].copy()
+    if "sharpie_rank" in left.columns:
+        rank_num = pd.to_numeric(left.get("sharpie_rank"), errors="coerce")
+        left = left[rank_num.between(1, 3, inclusive="both")].copy()
     allocation = pd.to_numeric(left.get("allocation", pd.Series(dtype=float)), errors="coerce").fillna(0)
     first_dates = sorted(left.loc[allocation.gt(0), "pick_date"].dropna().astype(str).unique().tolist()) if "pick_date" in left.columns else []
     if len(first_dates) > 1:
