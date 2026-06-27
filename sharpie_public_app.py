@@ -892,6 +892,110 @@ def sharpie_performance(picks: pd.DataFrame, results: pd.DataFrame) -> pd.DataFr
     return merged
 
 
+def previous_card_reflection(perf: pd.DataFrame, run_date: str) -> dict[str, object]:
+    if perf.empty or "actual_hit" not in perf.columns or "pick_date" not in perf.columns:
+        return {
+            "has_reflection": False,
+            "summary": "Sharpie does not have a resolved prior card to review yet.",
+            "lesson": "Once yesterday's results are published, this section will explain what the card taught him.",
+            "rows": pd.DataFrame(),
+        }
+
+    work = perf.copy()
+    work["pick_date"] = work["pick_date"].astype(str)
+    for column in ["actual_hit", "allocation", "profit", "sharpie_rank", "sharpie_probability", "sharpie_ev_per_dollar"]:
+        if column in work.columns:
+            work[column] = pd.to_numeric(work[column], errors="coerce")
+    status = work.get("bet_status", pd.Series("", index=work.index)).astype(str).str.lower()
+    work = work[
+        work["actual_hit"].isin([0, 1])
+        & work.get("allocation", pd.Series(0, index=work.index)).fillna(0).gt(0)
+        & work.get("sharpie_rank", pd.Series(99, index=work.index)).between(1, 3, inclusive="both")
+        & ~status.isin(["hold", "bonus late pick"])
+        & work["pick_date"].lt(str(run_date))
+    ].copy()
+    if work.empty:
+        return {
+            "has_reflection": False,
+            "summary": "No prior Sharpie card has resolved before today's slate.",
+            "lesson": "Sharpie is still waiting for a prior card to judge against hit rate, profit, and ROI.",
+            "rows": pd.DataFrame(),
+        }
+
+    try:
+        target_date = (dt.date.fromisoformat(str(run_date)) - dt.timedelta(days=1)).isoformat()
+    except ValueError:
+        target_date = ""
+    review_date = target_date if target_date in set(work["pick_date"]) else work["pick_date"].sort_values().iloc[-1]
+    card_rows = work[work["pick_date"].eq(review_date)].sort_values("sharpie_rank").copy()
+    picks_count = len(card_rows)
+    hits = int(card_rows["actual_hit"].sum())
+    staked = float(card_rows["allocation"].sum())
+    profit_value = float(card_rows["profit"].sum())
+    hit_rate = hits / picks_count if picks_count else 0.0
+    roi = profit_value / staked if staked else 0.0
+
+    hit_names = card_rows[card_rows["actual_hit"].eq(1)]["player"].astype(str).tolist()
+    miss_names = card_rows[card_rows["actual_hit"].eq(0)]["player"].astype(str).tolist()
+    biggest = card_rows.sort_values("allocation", ascending=False).iloc[0] if not card_rows.empty else pd.Series(dtype=object)
+    biggest_result = "hit" if float(biggest.get("actual_hit", 0) or 0) >= 1 else "missed"
+
+    summary = (
+        f"{review_date}: Sharpie went {hits}/{picks_count} ({hit_rate:.1%}) for {money(profit_value)} "
+        f"on {money(staked)} staked ({roi:.1%} ROI)."
+    )
+    if hit_names:
+        summary += f" Hits: {', '.join(hit_names)}."
+    if miss_names:
+        summary += f" Misses: {', '.join(miss_names)}."
+
+    if profit_value > 0 and biggest_result == "hit":
+        lesson = (
+            f"The main sizing call worked: {biggest.get('player', '')} was the largest allocation and got there. "
+            "Sharpie should keep rewarding this profile when model agreement, lineup opportunity, and price all line up."
+        )
+    elif profit_value > 0:
+        lesson = "The card still made money, but the largest bet did not carry it. That argues for selective diversification when the top edge is not clearly separated."
+    elif biggest_result == "missed":
+        lesson = (
+            "The largest allocation missed. Sharpie should be stricter before concentrating exposure and demand cleaner agreement, price, and player reliability."
+        )
+    else:
+        lesson = "The hit calls were not enough to overcome price or sizing. Sharpie should prioritize profit per dollar over raw hit likelihood."
+
+    reads: list[str] = []
+    for _, row in card_rows.iterrows():
+        player = str(row.get("player", "This pick"))
+        result = "hit" if float(row.get("actual_hit", 0) or 0) >= 1 else "missed"
+        line = (
+            f"{player} {result}: {money(row.get('allocation'))} at {odds_text(row.get('odds'))}, "
+            f"Sharpie probability {pct(row.get('sharpie_probability'))}, EV/$ {pct(row.get('sharpie_ev_per_dollar'))}."
+        )
+        like = str(row.get("what_sharpie_likes", "") or "").strip()
+        concern = str(row.get("sharpie_concern", "") or "").strip()
+        if result == "hit" and like:
+            line += f" What was right: {like}"
+        elif result == "missed" and concern:
+            line += f" Warning sign: {concern}"
+        reads.append(line)
+
+    card_rows["reflection_read"] = reads
+    return {
+        "has_reflection": True,
+        "review_date": review_date,
+        "picks": picks_count,
+        "hits": hits,
+        "staked": staked,
+        "profit": profit_value,
+        "roi": roi,
+        "hit_rate": hit_rate,
+        "summary": summary,
+        "lesson": lesson,
+        "diagnostics": reads,
+        "rows": card_rows,
+    }
+
+
 picks = read_csv(SHARPIE_PICKS)
 writeups = read_csv(SHARPIE_WRITEUPS)
 results = read_csv(SHARPIE_RESULTS_PUBLIC)
@@ -956,6 +1060,43 @@ with sharpie_tab:
         c2.markdown(f'<div class="card"><div class="label">Allocated</div><div class="big">{money(allocated)}</div></div>', unsafe_allow_html=True)
         c3.markdown(f'<div class="card"><div class="label">Reserved / Cash</div><div class="big">{money(reserved)} / {money(cash_held)}</div></div>', unsafe_allow_html=True)
         c4.markdown(f'<div class="card"><div class="label">Projected EV</div><div class="big good">{money(expected_profit)}</div></div>', unsafe_allow_html=True)
+
+        reflection = previous_card_reflection(perf, str(run_date))
+        st.markdown("## Sharpie's Previous Card Reflection")
+        if not reflection.get("has_reflection"):
+            st.info(str(reflection.get("summary", "Sharpie does not have a resolved prior card to review yet.")))
+            st.caption(str(reflection.get("lesson", "Once results are published, Sharpie will explain what worked and what he learned.")))
+        else:
+            r1, r2, r3, r4 = st.columns(4)
+            r1.metric("Reviewed Card", str(reflection.get("review_date", "--")))
+            r2.metric("Hit Rate", f"{int(reflection.get('hits', 0))}/{int(reflection.get('picks', 0))}", pct(reflection.get("hit_rate")))
+            r3.metric("Profit", money(reflection.get("profit")), f"{pct(reflection.get('roi'))} ROI")
+            r4.metric("Stake", money(reflection.get("staked")), "Official picks")
+            st.markdown(f"**What happened:** {reflection.get('summary', '')}")
+            st.markdown(f"**What Sharpie learned:** {reflection.get('lesson', '')}")
+            diagnostics = reflection.get("diagnostics", [])
+            if diagnostics:
+                with st.expander("Pick-by-pick reflection", expanded=True):
+                    for read in diagnostics:
+                        st.markdown(f"- {read}")
+            reflection_rows = reflection.get("rows", pd.DataFrame())
+            if isinstance(reflection_rows, pd.DataFrame) and not reflection_rows.empty:
+                with st.expander("Reflection data table", expanded=False):
+                    show_cols = [
+                        "sharpie_rank",
+                        "player",
+                        "team",
+                        "opponent",
+                        "odds",
+                        "allocation",
+                        "actual_hit",
+                        "actual_hits",
+                        "profit",
+                        "sharpie_ev_per_dollar",
+                        "sharpie_allocation_reason",
+                        "sharpie_concern",
+                    ]
+                    st.dataframe(reflection_rows[[col for col in show_cols if col in reflection_rows.columns]], use_container_width=True, hide_index=True)
 
         st.markdown(
             """
