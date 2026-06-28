@@ -1,0 +1,6 @@
+roi_card_rank,picks,hits,hit_rate,profit,roi,avg_odds,avg_pa_path_rank,avg_pa_path_probability,best_player_examples
+1,38,31,0.8157894736842105,8.241184049485534,0.21687326446014565,-207.42105263157896,2.5,0.7314921052631579,"Sam Antonacci, JJ Bleday, Sam Antonacci, JJ Bleday, Carlos Cortes"
+2,37,21,0.5675675675675675,-5.908125766558082,-0.15967907477184004,-213.78378378378378,4.486486486486487,0.7262108108108108,"Sam Antonacci, JJ Bleday, JJ Bleday, Ben Rice, Liam Hicks"
+3,32,29,0.90625,10.907237046291216,0.3408511576966005,-210.0625,6.21875,0.7217625000000001,"Michael Conforto, Ben Rice, Dillon Dingler, James Wood, Ben Rice"
+4,26,20,0.7692307692307693,3.1960832470107454,0.12292627873118252,-219.3846153846154,7.461538461538462,0.7188846153846153,"James Wood, Kevin McGonigle, Brandon Lowe, Jeremy Peña, Kyle Schwarber"
+5,20,17,0.85,4.925798847700287,0.24628994238501437,-213.0,8.65,0.71637,"Yohendrick Piñango, Sam Antonacci, James Wood, Jake McCarthy, Jeremy Peña"
