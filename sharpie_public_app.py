@@ -1001,9 +1001,10 @@ writeups = read_csv(SHARPIE_WRITEUPS)
 results = read_csv(SHARPIE_RESULTS_PUBLIC)
 lookup = read_csv(PLAYER_LOOKUP)
 
-run_date = latest_date(picks, "pick_date")
-if (not lookup.empty) and (picks.empty or run_date == dt.date.today().isoformat()):
-    run_date = latest_date(lookup, "lookup_date")
+date_candidates = [latest_date(picks, "pick_date")]
+if not lookup.empty:
+    date_candidates.append(latest_date(lookup, "lookup_date"))
+run_date = max([str(item) for item in date_candidates if str(item).strip()], default=dt.date.today().isoformat())
 today = picks[picks.get("pick_date", pd.Series(dtype=str)).astype(str).eq(str(run_date))].copy() if not picks.empty else pd.DataFrame()
 today = today.sort_values("sharpie_rank") if "sharpie_rank" in today.columns else today
 perf = sharpie_performance(picks, results)
