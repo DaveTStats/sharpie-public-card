@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import datetime as dt
 from pathlib import Path
-from zoneinfo import ZoneInfo
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:  # pragma: no cover - Streamlit Cloud fallback for older Python images.
+    from backports.zoneinfo import ZoneInfo
 
 import pandas as pd
 import streamlit as st
