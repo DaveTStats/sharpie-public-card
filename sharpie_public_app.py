@@ -538,11 +538,16 @@ def refresh_game_timing(frame: pd.DataFrame) -> pd.DataFrame:
         source = fallback if source is None else source.combine_first(fallback)
     if source is None:
         return out
-    starts = source.apply(
-        lambda value: pd.to_datetime(value, errors="coerce", utc=True).tz_convert(LOCAL_TIMEZONE)
-        if pd.notna(value)
-        else pd.NaT
-    )
+
+    def parse_game_time(value):
+        if pd.isna(value):
+            return pd.NaT
+        parsed = pd.to_datetime(value, errors="coerce", utc=True)
+        if pd.isna(parsed):
+            return pd.NaT
+        return parsed.tz_convert(LOCAL_TIMEZONE)
+
+    starts = source.apply(parse_game_time)
     out["game_start_local"] = starts.apply(lambda value: value.isoformat(timespec="minutes") if pd.notna(value) else "")
     now = pd.Timestamp.now(tz=LOCAL_TIMEZONE)
     out["minutes_to_game"] = ((starts - now).dt.total_seconds() / 60.0).round(1)
