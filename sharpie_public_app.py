@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime as dt
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import streamlit as st
@@ -16,6 +17,7 @@ PLAYER_LOOKUP = ROOT / "data" / "processed" / "sharpie_player_lookup_public.csv"
 LIVE_BUYBACK_RANKINGS = ROOT / "data" / "processed" / "live_buyback_player_rankings.csv"
 ANALYSIS_DIR = ROOT / "outputs" / "analysis"
 SHARPIE_EXCLUDED_PERFORMANCE_DATES = {"2026-05-23"}
+LOCAL_TIMEZONE = ZoneInfo("America/Indianapolis")
 
 
 st.set_page_config(page_title="Sharpie MLB Hit Card", page_icon="Sharpie", layout="wide")
@@ -524,6 +526,24 @@ def latest_date(frame: pd.DataFrame, column: str) -> str:
     return dates.max() if not dates.empty else dt.date.today().isoformat()
 
 
+def refresh_game_timing(frame: pd.DataFrame) -> pd.DataFrame:
+    if frame.empty:
+        return frame
+    out = frame.copy()
+    source = None
+    if "commence_time" in out.columns:
+        source = out["commence_time"]
+    elif "game_start_local" in out.columns:
+        source = out["game_start_local"]
+    if source is None:
+        return out
+    starts = pd.to_datetime(source, errors="coerce", utc=True).dt.tz_convert(LOCAL_TIMEZONE)
+    out["game_start_local"] = starts.apply(lambda value: value.isoformat(timespec="minutes") if pd.notna(value) else "")
+    now = pd.Timestamp.now(tz=LOCAL_TIMEZONE)
+    out["minutes_to_game"] = ((starts - now).dt.total_seconds() / 60.0).round(1)
+    return out
+
+
 def value(row: pd.Series, column: str, default: float = 0.0) -> float:
     raw = row.get(column, default)
     try:
@@ -996,7 +1016,7 @@ def previous_card_reflection(perf: pd.DataFrame, run_date: str) -> dict[str, obj
     }
 
 
-picks = read_csv(SHARPIE_PICKS)
+picks = refresh_game_timing(read_csv(SHARPIE_PICKS))
 writeups = read_csv(SHARPIE_WRITEUPS)
 results = read_csv(SHARPIE_RESULTS_PUBLIC)
 lookup = read_csv(PLAYER_LOOKUP)
