@@ -1,4 +1,5 @@
 streamlit>=1.57
 pandas>=2.0
 numpy>=1.24
+tzdata>=2025.2
 backports.zoneinfo; python_version < "3.9"

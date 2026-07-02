@@ -4,8 +4,10 @@ import datetime as dt
 from pathlib import Path
 try:
     from zoneinfo import ZoneInfo
+    from zoneinfo import ZoneInfoNotFoundError
 except ImportError:  # pragma: no cover - Streamlit Cloud fallback for older Python images.
     from backports.zoneinfo import ZoneInfo
+    from backports.zoneinfo import ZoneInfoNotFoundError
 
 import pandas as pd
 import streamlit as st
@@ -20,7 +22,10 @@ PLAYER_LOOKUP = ROOT / "data" / "processed" / "sharpie_player_lookup_public.csv"
 LIVE_BUYBACK_RANKINGS = ROOT / "data" / "processed" / "live_buyback_player_rankings.csv"
 ANALYSIS_DIR = ROOT / "outputs" / "analysis"
 SHARPIE_EXCLUDED_PERFORMANCE_DATES = {"2026-05-23"}
-LOCAL_TIMEZONE = ZoneInfo("America/Indianapolis")
+try:
+    LOCAL_TIMEZONE = ZoneInfo("America/Indianapolis")
+except ZoneInfoNotFoundError:  # Windows local fallback when tzdata is not installed.
+    LOCAL_TIMEZONE = dt.timezone(dt.timedelta(hours=-4), name="America/Indianapolis")
 
 
 st.set_page_config(page_title="Sharpie MLB Hit Card", page_icon="Sharpie", layout="wide")
