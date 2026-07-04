@@ -831,7 +831,7 @@ def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]
         ].copy()
         if not primary.empty:
             row = primary.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
-            return row, "BET CANDIDATE", "Primary Predictor Rule", "Clears the strongest historical rule: modeled parlay probability at least 44% and combined price no higher than +140."
+            return row, "BET CANDIDATE", "Grade A - Predictor A", "Clears the strongest historical rule: modeled parlay probability at least 44% and combined price no higher than +140."
 
         secondary = predictor[
             predictor["combined_american_odds"].le(160)
@@ -841,11 +841,11 @@ def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]
         if not secondary.empty:
             row = secondary.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
             status = "BET CANDIDATE" if float(row.get("parlay_probability", 0) or 0) >= 0.42 else "WATCHLIST"
-            return row, status, "Secondary Predictor Rule", "Uses the broader historical rule: keep the two-leg price controlled at +160 or shorter."
+            return row, status, "Grade B - Predictor B", "Uses the broader historical rule: keep the two-leg price controlled at +160 or shorter."
 
         if not predictor.empty:
             row = predictor.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
-            return row, "PASS", "Predictor Watchlist", "Best available parlay does not clear Sharpie's controlled-price parlay filters."
+            return row, "PASS", "No Grade - Predictor Watchlist", "Best available parlay does not clear Sharpie's controlled-price parlay filters."
 
     official = read_csv(SHARPIE_PARLAYS)
     if official.empty:
@@ -862,7 +862,8 @@ def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]
         return None, "NO CARD", "No Current Parlay", "No current parlay row is available."
     row = official.sort_values(["parlay_probability", "parlay_ev_per_dollar"], ascending=False).iloc[0]
     status = "BET CANDIDATE" if float(row.get("combined_american_odds", 999) or 999) <= 140 and float(row.get("parlay_probability", 0) or 0) >= 0.44 else "WATCHLIST"
-    return row, status, "Official Sharpie Fallback", "Using Sharpie's official parlay file because the predictor card was not available."
+    grade = "Grade C - Top 3 Backup" if status == "BET CANDIDATE" else "No Grade - Official Watchlist"
+    return row, status, grade, "Using Sharpie's official parlay file because the predictor card was not available."
 
 
 def render_best_parlay_tab(run_date: str) -> None:
