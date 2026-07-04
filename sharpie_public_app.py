@@ -23,6 +23,7 @@ LIVE_BUYBACK_RANKINGS = ROOT / "data" / "processed" / "live_buyback_player_ranki
 PARLAY_PREDICTOR_TODAY = ROOT / "data" / "processed" / "parlay_predictor_today.csv"
 PARLAY_PREDICTOR_BACKTEST = ROOT / "data" / "processed" / "parlay_predictor_backtest.csv"
 SHARPIE_PARLAYS = ROOT / "data" / "processed" / "sharpie_parlays.csv"
+SHARPIE_BEST_PARLAY_LOCKED = ROOT / "data" / "processed" / "sharpie_best_parlay_locked.csv"
 SHARPIE_TOP3_PARLAY_BACKTEST = ROOT / "data" / "processed" / "sharpie_top3_only_parlay_backtest.csv"
 ANALYSIS_DIR = ROOT / "outputs" / "analysis"
 SHARPIE_EXCLUDED_PERFORMANCE_DATES = {"2026-05-23"}
@@ -627,22 +628,40 @@ def roi_edge_latest_targets() -> tuple[pd.DataFrame, str]:
     current, current_label = read_latest_csv("roi_edge_current_card_*.csv")
     locked, label = read_latest_csv("roi_edge_locked_card_*.csv")
 
-    locked_keys: set[str] = set()
-    if not locked.empty:
-        locked = locked.copy()
-        if "roi_edge_key" in locked.columns:
-            locked_keys = set(locked["roi_edge_key"].dropna().astype(str))
-
     if not current.empty:
         current = current.copy()
         current["display_roi_rank"] = pd.to_numeric(current.get("roi_edge_card_pick"), errors="coerce")
-        targets = current[current["display_roi_rank"].isin([1, 3, 5])].copy()
-        if "roi_edge_key" in targets.columns:
-            targets["display_roi_status"] = targets["roi_edge_key"].astype(str).isin(locked_keys).map({True: "LOCKED", False: "HOLD"})
-        else:
-            targets["display_roi_status"] = "HOLD"
-        targets["display_roi_rank"] = targets["display_roi_rank"].astype("Int64")
-        return targets.sort_values("display_roi_rank"), current_label
+        current_targets = current[current["display_roi_rank"].isin([1, 3, 5])].copy()
+
+        locked_targets = pd.DataFrame()
+        if not locked.empty:
+            locked = locked.copy()
+            locked_rank_col = "roi_edge_locked_rank" if "roi_edge_locked_rank" in locked.columns else "roi_edge_card_pick"
+            locked["display_roi_rank"] = pd.to_numeric(locked.get(locked_rank_col), errors="coerce")
+            locked_status = locked.get("roi_edge_lock_status", pd.Series("", index=locked.index)).astype(str).str.upper()
+            locked_targets = locked[locked["display_roi_rank"].isin([1, 3, 5]) & locked_status.eq("LOCKED")].copy()
+
+        rows: list[pd.Series] = []
+        for rank in [1, 3, 5]:
+            locked_rank = locked_targets[locked_targets["display_roi_rank"].eq(rank)] if not locked_targets.empty else pd.DataFrame()
+            if not locked_rank.empty:
+                row = locked_rank.iloc[-1].copy()
+                row["display_roi_status"] = "LOCKED"
+                rows.append(row)
+                continue
+
+            current_rank = current_targets[current_targets["display_roi_rank"].eq(rank)]
+            if not current_rank.empty:
+                row = current_rank.iloc[0].copy()
+                row["display_roi_status"] = "HOLD"
+                rows.append(row)
+
+        if not rows:
+            return pd.DataFrame(), current_label
+        targets = pd.DataFrame(rows)
+        targets["display_roi_rank"] = pd.to_numeric(targets.get("display_roi_rank"), errors="coerce").astype("Int64")
+        source_label = label if not locked_targets.empty else current_label
+        return targets.sort_values("display_roi_rank"), source_label
 
     if locked.empty:
         return locked, label
@@ -801,6 +820,25 @@ def parlay_performance_rows() -> pd.DataFrame:
 
 
 def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]:
+    locked = read_csv(SHARPIE_BEST_PARLAY_LOCKED)
+    if not locked.empty:
+        locked = locked.copy()
+        if "pick_date" in locked.columns:
+            locked = locked[locked["pick_date"].astype(str).eq(str(run_date))].copy()
+        if locked.empty and "pick_date" in read_csv(SHARPIE_BEST_PARLAY_LOCKED).columns:
+            locked = read_csv(SHARPIE_BEST_PARLAY_LOCKED)
+            latest = latest_date(locked, "pick_date")
+            if latest:
+                locked = locked[locked["pick_date"].astype(str).eq(str(latest))].copy()
+        if not locked.empty:
+            row = locked.iloc[-1]
+            locked_status = str(row.get("app_status", row.get("lock_status", "LOCKED")) or "LOCKED").upper()
+            display_status = "LOCKED" if locked_status != "PASS" else "LOCKED PASS"
+            grade = str(row.get("app_grade", row.get("parlay_grade", "Locked Parlay")) or "Locked Parlay")
+            reason = str(row.get("lock_reason", "") or "This parlay snapshot is frozen and will not rotate on later refreshes.")
+            note = f"{reason} Original read: {locked_status}."
+            return row, display_status, grade, note
+
     predictor = read_csv(PARLAY_PREDICTOR_TODAY)
     if not predictor.empty:
         predictor = predictor.copy()
@@ -831,7 +869,7 @@ def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]
         ].copy()
         if not primary.empty:
             row = primary.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
-            return row, "BET CANDIDATE", "Grade A - Predictor A", "Clears the strongest historical rule: modeled parlay probability at least 44% and combined price no higher than +140."
+            return row, "HOLD", "Grade A - Predictor A", "Live candidate only. It clears the strongest historical rule, but it can rotate until the earliest leg reaches the 60-minute lock window."
 
         secondary = predictor[
             predictor["combined_american_odds"].le(160)
@@ -840,12 +878,11 @@ def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]
         ].copy()
         if not secondary.empty:
             row = secondary.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
-            status = "BET CANDIDATE" if float(row.get("parlay_probability", 0) or 0) >= 0.42 else "WATCHLIST"
-            return row, status, "Grade B - Predictor B", "Uses the broader historical rule: keep the two-leg price controlled at +160 or shorter."
+            return row, "HOLD", "Grade B - Predictor B", "Live candidate only. It uses the broader controlled-price rule, but it can rotate until the earliest leg reaches the 60-minute lock window."
 
         if not predictor.empty:
             row = predictor.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
-            return row, "PASS", "No Grade - Predictor Watchlist", "Best available parlay does not clear Sharpie's controlled-price parlay filters."
+            return row, "HOLD", "No Grade - Predictor Watchlist", "Best available parlay does not clear Sharpie's controlled-price filters yet and remains live until the lock window."
 
     official = read_csv(SHARPIE_PARLAYS)
     if official.empty:
@@ -861,7 +898,8 @@ def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]
     if official.empty:
         return None, "NO CARD", "No Current Parlay", "No current parlay row is available."
     row = official.sort_values(["parlay_probability", "parlay_ev_per_dollar"], ascending=False).iloc[0]
-    status = "BET CANDIDATE" if float(row.get("combined_american_odds", 999) or 999) <= 140 and float(row.get("parlay_probability", 0) or 0) >= 0.44 else "WATCHLIST"
+    raw_status = str(row.get("bet_status", "") or "").upper()
+    status = "LOCKED" if raw_status == "LOCKED" else "HOLD"
     grade = "Grade C - Top 3 Backup" if status == "BET CANDIDATE" else "No Grade - Official Watchlist"
     return row, status, grade, "Using Sharpie's official parlay file because the predictor card was not available."
 
@@ -875,8 +913,8 @@ def render_best_parlay_tab(run_date: str) -> None:
     if row is None:
         st.info(note)
     else:
-        badge_class = "status-locked" if status == "BET CANDIDATE" else "status-hold"
-        stake_note = "Small 0.25u to 0.50u only" if status == "BET CANDIDATE" else "$0 unless the price/model improves"
+        badge_class = "status-locked" if status.startswith("LOCKED") else "status-hold"
+        stake_note = "Small 0.25u to 0.50u only" if status == "LOCKED" else "$0 until this card locks"
         st.markdown(
             f"""
             <div class="parlay-card">
