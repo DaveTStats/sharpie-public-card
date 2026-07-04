@@ -20,6 +20,10 @@ SHARPIE_WRITEUPS = ROOT / "data" / "processed" / "sharpie_writeups.csv"
 SHARPIE_RESULTS_PUBLIC = ROOT / "data" / "processed" / "sharpie_results_public.csv"
 PLAYER_LOOKUP = ROOT / "data" / "processed" / "sharpie_player_lookup_public.csv"
 LIVE_BUYBACK_RANKINGS = ROOT / "data" / "processed" / "live_buyback_player_rankings.csv"
+PARLAY_PREDICTOR_TODAY = ROOT / "data" / "processed" / "parlay_predictor_today.csv"
+PARLAY_PREDICTOR_BACKTEST = ROOT / "data" / "processed" / "parlay_predictor_backtest.csv"
+SHARPIE_PARLAYS = ROOT / "data" / "processed" / "sharpie_parlays.csv"
+SHARPIE_TOP3_PARLAY_BACKTEST = ROOT / "data" / "processed" / "sharpie_top3_only_parlay_backtest.csv"
 ANALYSIS_DIR = ROOT / "outputs" / "analysis"
 SHARPIE_EXCLUDED_PERFORMANCE_DATES = {"2026-05-23"}
 try:
@@ -213,6 +217,38 @@ st.markdown(
         font-size: 1.15rem;
         font-weight: 950;
         color: #f8fafc;
+    }
+    .parlay-card {
+        border: 1px solid rgba(255,191,63,.62);
+        border-radius: 18px;
+        padding: 18px;
+        background: linear-gradient(135deg, rgba(255,191,63,.15), rgba(7,12,21,.90));
+        box-shadow: 0 0 28px rgba(255,191,63,.12), inset 0 0 24px rgba(255,191,63,.06);
+        margin: 12px 0 18px;
+    }
+    .parlay-leg-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+    }
+    .parlay-leg {
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 14px;
+        padding: 12px;
+        background: rgba(5, 12, 21, .65);
+    }
+    .parlay-tag {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: .76rem;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #06130a;
+        background: #ffbf3f;
+        margin-left: 8px;
     }
     .sharpie-stage {
         position: relative;
@@ -711,6 +747,182 @@ def live_buyback_board(run_date: str) -> pd.DataFrame:
         return board.head(5).copy()
 
 
+def parlay_performance_rows() -> pd.DataFrame:
+    rows = []
+
+    predictor = read_csv(PARLAY_PREDICTOR_BACKTEST)
+    if not predictor.empty:
+        work = predictor.copy()
+        for column in ["actual_parlay_hit", "profit", "combined_american_odds", "parlay_probability"]:
+            if column in work.columns:
+                work[column] = pd.to_numeric(work[column], errors="coerce")
+        work = work[work["actual_parlay_hit"].isin([0, 1])].copy()
+        rule_sets = [
+            ("Predictor A: Prob >=44%, Odds <=+140", work[work["parlay_probability"].ge(0.44) & work["combined_american_odds"].le(140)]),
+            ("Predictor B: Odds <=+160", work[work["combined_american_odds"].le(160)]),
+        ]
+        for label, subset in rule_sets:
+            if subset.empty:
+                continue
+            rows.append(
+                {
+                    "Strategy": label,
+                    "Sample": len(subset),
+                    "Wins": int(subset["actual_parlay_hit"].sum()),
+                    "Win Rate": subset["actual_parlay_hit"].mean(),
+                    "ROI / 1u": subset["profit"].mean(),
+                    "Avg Odds": subset["combined_american_odds"].mean(),
+                }
+            )
+
+    top3 = read_csv(SHARPIE_TOP3_PARLAY_BACKTEST)
+    if not top3.empty:
+        work = top3.copy()
+        for column in ["actual_parlay_hit", "profit", "recommended_stake", "combined_american_odds", "leg1_odds", "leg2_odds"]:
+            if column in work.columns:
+                work[column] = pd.to_numeric(work[column], errors="coerce")
+        work = work[work["actual_parlay_hit"].isin([0, 1])].copy()
+        stake = work.get("recommended_stake", pd.Series(1.0, index=work.index)).replace(0, pd.NA).fillna(1.0)
+        work["_profit_per_1u"] = work["profit"] / stake
+        subset = work[work["combined_american_odds"].le(140) & work["leg1_odds"].ge(-245) & work["leg2_odds"].ge(-245)].copy()
+        if not subset.empty:
+            rows.append(
+                {
+                    "Strategy": "Top-3 Backup: Odds <=+140, legs >=-245",
+                    "Sample": len(subset),
+                    "Wins": int(subset["actual_parlay_hit"].sum()),
+                    "Win Rate": subset["actual_parlay_hit"].mean(),
+                    "ROI / 1u": subset["_profit_per_1u"].mean(),
+                    "Avg Odds": subset["combined_american_odds"].mean(),
+                }
+            )
+
+    return pd.DataFrame(rows)
+
+
+def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]:
+    predictor = read_csv(PARLAY_PREDICTOR_TODAY)
+    if not predictor.empty:
+        predictor = predictor.copy()
+        for column in [
+            "parlay_probability",
+            "combined_american_odds",
+            "parlay_ev_per_dollar",
+            "parlay_predictor_score",
+            "leg1_odds",
+            "leg2_odds",
+            "leg1_probability",
+            "leg2_probability",
+            "leg1_lineup_slot",
+            "leg2_lineup_slot",
+        ]:
+            if column in predictor.columns:
+                predictor[column] = pd.to_numeric(predictor[column], errors="coerce")
+        if "pick_date" in predictor.columns:
+            latest = latest_date(predictor, "pick_date")
+            if latest:
+                predictor = predictor[predictor["pick_date"].astype(str).eq(str(latest))].copy()
+
+        primary = predictor[
+            predictor["parlay_probability"].ge(0.44)
+            & predictor["combined_american_odds"].le(140)
+            & predictor["leg1_odds"].ge(-275)
+            & predictor["leg2_odds"].ge(-275)
+        ].copy()
+        if not primary.empty:
+            row = primary.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
+            return row, "BET CANDIDATE", "Primary Predictor Rule", "Clears the strongest historical rule: modeled parlay probability at least 44% and combined price no higher than +140."
+
+        secondary = predictor[
+            predictor["combined_american_odds"].le(160)
+            & predictor["leg1_odds"].ge(-275)
+            & predictor["leg2_odds"].ge(-275)
+        ].copy()
+        if not secondary.empty:
+            row = secondary.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
+            status = "BET CANDIDATE" if float(row.get("parlay_probability", 0) or 0) >= 0.42 else "WATCHLIST"
+            return row, status, "Secondary Predictor Rule", "Uses the broader historical rule: keep the two-leg price controlled at +160 or shorter."
+
+        if not predictor.empty:
+            row = predictor.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
+            return row, "PASS", "Predictor Watchlist", "Best available parlay does not clear Sharpie's controlled-price parlay filters."
+
+    official = read_csv(SHARPIE_PARLAYS)
+    if official.empty:
+        return None, "NO CARD", "No Parlay Data", "No parlay file has been published yet."
+    official = official.copy()
+    for column in ["combined_american_odds", "parlay_probability", "parlay_ev_per_dollar"]:
+        if column in official.columns:
+            official[column] = pd.to_numeric(official[column], errors="coerce")
+    if "pick_date" in official.columns:
+        latest = latest_date(official, "pick_date")
+        if latest:
+            official = official[official["pick_date"].astype(str).eq(str(latest))].copy()
+    if official.empty:
+        return None, "NO CARD", "No Current Parlay", "No current parlay row is available."
+    row = official.sort_values(["parlay_probability", "parlay_ev_per_dollar"], ascending=False).iloc[0]
+    status = "BET CANDIDATE" if float(row.get("combined_american_odds", 999) or 999) <= 140 and float(row.get("parlay_probability", 0) or 0) >= 0.44 else "WATCHLIST"
+    return row, status, "Official Sharpie Fallback", "Using Sharpie's official parlay file because the predictor card was not available."
+
+
+def render_best_parlay_tab(run_date: str) -> None:
+    st.markdown("## Sharpie's Best 2-Leg Parlay")
+    st.caption("This uses the historical parlay edge Sharpie found: controlled two-leg prices, preferably +140 or shorter, with modeled parlay probability of 44%+.")
+    row, status, rule, note = current_best_parlay(run_date)
+    perf_rows = parlay_performance_rows()
+
+    if row is None:
+        st.info(note)
+    else:
+        badge_class = "status-locked" if status == "BET CANDIDATE" else "status-hold"
+        stake_note = "Small 0.25u to 0.50u only" if status == "BET CANDIDATE" else "$0 unless the price/model improves"
+        st.markdown(
+            f"""
+            <div class="parlay-card">
+              <div class="label">Sharpie Parlay Read <span class="status-badge {badge_class}">{status}</span><span class="parlay-tag">{rule}</span></div>
+              <div class="big">{row.get('leg1_player', '')} + {row.get('leg2_player', '')}</div>
+              <div>Combined odds: <strong>{odds_text(row.get('combined_american_odds'))}</strong> | Modeled parlay probability: <strong>{pct(row.get('parlay_probability'))}</strong> | EV/$: <strong>{pct(row.get('parlay_ev_per_dollar', row.get('parlay_edge')))}</strong></div>
+              <div style="color:#aab6c5;margin-top:8px;">{note} Recommended sizing: <strong>{stake_note}</strong>.</div>
+              <div class="parlay-leg-grid">
+                <div class="parlay-leg">
+                  <div class="label">Leg 1</div>
+                  <div class="big">{row.get('leg1_player', '')}</div>
+                  <div>{row.get('leg1_team', '')} vs {row.get('leg1_opponent', '')}</div>
+                  <div>Odds <strong>{odds_text(row.get('leg1_odds'))}</strong> | Hit prob <strong>{pct(row.get('leg1_probability'))}</strong> | Slot <strong>#{row.get('leg1_lineup_slot', '--')}</strong></div>
+                </div>
+                <div class="parlay-leg">
+                  <div class="label">Leg 2</div>
+                  <div class="big">{row.get('leg2_player', '')}</div>
+                  <div>{row.get('leg2_team', '')} vs {row.get('leg2_opponent', '')}</div>
+                  <div>Odds <strong>{odds_text(row.get('leg2_odds'))}</strong> | Hit prob <strong>{pct(row.get('leg2_probability'))}</strong> | Slot <strong>#{row.get('leg2_lineup_slot', '--')}</strong></div>
+                </div>
+              </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        why = str(row.get("why_it_has_edge", "") or row.get("why_sharpie_likes_it", "") or "").strip()
+        risk = str(row.get("risk_note", "") or row.get("sharpie_concern", "") or "").strip()
+        if why:
+            st.markdown(f"**Why Sharpie likes it:** {why}")
+        if risk:
+            st.markdown(f"**What worries Sharpie:** {risk}")
+
+    st.markdown("## Strategy Performance")
+    if perf_rows.empty:
+        st.info("Parlay strategy performance will appear once the backtest files are published.")
+    else:
+        cols = st.columns(min(3, len(perf_rows)))
+        for idx, (_, rec) in enumerate(perf_rows.iterrows()):
+            with cols[idx % len(cols)]:
+                st.metric(str(rec.get("Strategy", "")), pct(rec.get("Win Rate")), f"{int(rec.get('Wins', 0))}/{int(rec.get('Sample', 0))} | ROI {pct(rec.get('ROI / 1u'))}")
+        display = perf_rows.copy()
+        display["Win Rate"] = display["Win Rate"].map(pct)
+        display["ROI / 1u"] = display["ROI / 1u"].map(pct)
+        display["Avg Odds"] = display["Avg Odds"].map(odds_text)
+        st.dataframe(display, use_container_width=True, hide_index=True)
+
+
 def render_roi_edge_tab() -> None:
     targets, target_label = roi_edge_latest_targets()
     rolling, summary, daily_label = roi_edge_rank_performance()
@@ -1080,7 +1292,7 @@ st.markdown(
 
 st.caption("Informational model output only. Betting involves risk. Odds and lineups can move after this card is published.")
 
-sharpie_tab, roi_tab = st.tabs(["Sharpie's Top 3", "Locked ROI Edge"])
+sharpie_tab, parlay_tab, roi_tab = st.tabs(["Sharpie's Top 3", "Best Parlay", "Locked ROI Edge"])
 
 with sharpie_tab:
     if today.empty:
@@ -1241,6 +1453,9 @@ with sharpie_tab:
 
 with roi_tab:
     render_roi_edge_tab()
+
+with parlay_tab:
+    render_best_parlay_tab(str(run_date))
 
 st.markdown("## Ask Sharpie About A Batter")
 st.caption("Search today's public player board by last name or full name. Sharpie's score blends the models with lineup, team trust, matchup, PA path, market, and form context.")
