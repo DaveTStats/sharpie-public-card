@@ -825,11 +825,6 @@ def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]
         locked = locked.copy()
         if "pick_date" in locked.columns:
             locked = locked[locked["pick_date"].astype(str).eq(str(run_date))].copy()
-        if locked.empty and "pick_date" in read_csv(SHARPIE_BEST_PARLAY_LOCKED).columns:
-            locked = read_csv(SHARPIE_BEST_PARLAY_LOCKED)
-            latest = latest_date(locked, "pick_date")
-            if latest:
-                locked = locked[locked["pick_date"].astype(str).eq(str(latest))].copy()
         if not locked.empty:
             row = locked.iloc[-1]
             locked_status = str(row.get("app_status", row.get("lock_status", "LOCKED")) or "LOCKED").upper()
