@@ -714,11 +714,17 @@ def roi_edge_rank_performance() -> tuple[pd.DataFrame, pd.DataFrame, str]:
 def live_buyback_board(run_date: str) -> pd.DataFrame:
     today_path = ROOT / "data" / "processed" / f"live_buyback_watchlist_{run_date}.csv"
     board = read_csv(today_path)
+    source_path = today_path if not board.empty else LIVE_BUYBACK_RANKINGS
     if board.empty:
         board = read_csv(LIVE_BUYBACK_RANKINGS)
     if board.empty:
         return board
     board = board.copy()
+    try:
+        updated_at = dt.datetime.fromtimestamp(source_path.stat().st_mtime, tz=LOCAL_TIMEZONE).isoformat(timespec="minutes")
+    except OSError:
+        updated_at = ""
+    board["_source_updated_at"] = updated_at
     for column in [
         "buyback_watch_score",
         "buyback_score",
@@ -1441,6 +1447,7 @@ with sharpie_tab:
         if buyback.empty:
             st.info("No Late Hitter buyback reserve slots are available yet. This board fills from the top 30 after the buyback model runs.")
         else:
+            source_updated = str(buyback.get("_source_updated_at", pd.Series("", index=buyback.index)).iloc[0] or "")
             locked_count = (
                 int(buyback["late_hitter_lock_status"].astype(str).str.upper().eq("LOCKED").sum())
                 if "late_hitter_lock_status" in buyback.columns
@@ -1451,6 +1458,8 @@ with sharpie_tab:
             metric_cols[0].markdown(f'<div class="card"><div class="label">Buyback Watch</div><div class="big">{len(buyback)}</div><div>{locked_count} locked / {hold_count} hold</div></div>', unsafe_allow_html=True)
             metric_cols[1].markdown(f'<div class="card"><div class="label">Avg After 0-for-1</div><div class="big">{pct(buyback.get("bayes_recovery_hit_rate", pd.Series(dtype=float)).mean())}</div></div>', unsafe_allow_html=True)
             metric_cols[2].markdown(f'<div class="card"><div class="label">Avg Fair Live Odds</div><div class="big">{odds_text(buyback.get("fair_live_odds_after_0for1", pd.Series(dtype=float)).mean())}</div></div>', unsafe_allow_html=True)
+            if source_updated:
+                st.markdown(f"<div class='label'>Late Hitter file updated: <span class='accent'>{source_updated}</span></div>", unsafe_allow_html=True)
             for rank, (_, row) in enumerate(buyback.iterrows(), start=1):
                 display_rank = row.get("sharpie_late_hitter_slot", rank)
                 try:
