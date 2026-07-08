@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import re
 from pathlib import Path
 try:
     from zoneinfo import ZoneInfo
@@ -528,7 +529,14 @@ def read_csv(path: Path) -> pd.DataFrame:
 
 @st.cache_data(ttl=60)
 def read_latest_csv(pattern: str) -> tuple[pd.DataFrame, str]:
-    files = sorted(ANALYSIS_DIR.glob(pattern), key=lambda item: item.stat().st_mtime, reverse=True)
+    def dated_sort_key(item: Path) -> tuple[pd.Timestamp, float]:
+        match = re.search(r"(20\d{2}-\d{2}-\d{2})", item.name)
+        file_date = pd.to_datetime(match.group(1), errors="coerce") if match else pd.NaT
+        if pd.isna(file_date):
+            file_date = pd.Timestamp.min
+        return file_date, item.stat().st_mtime
+
+    files = sorted(ANALYSIS_DIR.glob(pattern), key=dated_sort_key, reverse=True)
     if not files:
         return pd.DataFrame(), ""
     try:
