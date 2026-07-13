@@ -109,5 +109,5 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-07-10,2,Shea Langeliers,ATH,CWS,-222.0,21.0,Locked,0.0,0.0,-21.0,-1.0
 2026-07-11,1,Randal Grichuk,CWS,ATH,-211.0,22.0,Locked,1.0,1.0,10.42654028436019,0.47393364928909953
 2026-07-11,2,Jonathan Aranda,TB,SEA,-166.0,21.0,Locked,1.0,3.0,12.650602409638555,0.6024096385542169
-2026-07-12,1,Kevin McGonigle,DET,PHI,-181.0,31.0,Locked,,,,
-2026-07-12,2,Kyle Schwarber,PHI,DET,-160.0,21.0,Locked,,,,
+2026-07-12,1,Kevin McGonigle,DET,PHI,-181.0,31.0,Locked,0.0,0.0,-31.0,-1.0
+2026-07-12,2,Kyle Schwarber,PHI,DET,-160.0,21.0,Locked,1.0,2.0,13.125,0.625
