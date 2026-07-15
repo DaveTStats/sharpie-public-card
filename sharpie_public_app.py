@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import json
 import re
 from pathlib import Path
 try:
@@ -26,6 +27,7 @@ PARLAY_PREDICTOR_BACKTEST = ROOT / "data" / "processed" / "parlay_predictor_back
 SHARPIE_PARLAYS = ROOT / "data" / "processed" / "sharpie_parlays.csv"
 SHARPIE_BEST_PARLAY_LOCKED = ROOT / "data" / "processed" / "sharpie_best_parlay_locked.csv"
 SHARPIE_TOP3_PARLAY_BACKTEST = ROOT / "data" / "processed" / "sharpie_top3_only_parlay_backtest.csv"
+SHARPIE_SOL_LATEST = ROOT / "data" / "processed" / "sharpie_sol_latest.json"
 ANALYSIS_DIR = ROOT / "outputs" / "analysis"
 SHARPIE_EXCLUDED_PERFORMANCE_DATES = {"2026-05-23"}
 try:
@@ -101,6 +103,24 @@ st.markdown(
         color: #ffcf6f;
         border: 1px solid rgba(255,191,63,.75);
         background: rgba(255,191,63,.14);
+    }
+    .sol-badge {
+        display: inline-block;
+        margin-left: 10px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        color: #7dff8e;
+        border: 1px solid rgba(98,210,111,.80);
+        background: rgba(98,210,111,.18);
+        font-size: .76rem;
+        font-weight: 950;
+        letter-spacing: .06em;
+        vertical-align: middle;
+    }
+    .sol-risk-badge {
+        color: #ff9aa5;
+        border-color: rgba(255,91,107,.82);
+        background: rgba(255,91,107,.16);
     }
     .status-explainer {
         border: 1px solid rgba(255,255,255,.12);
@@ -525,6 +545,16 @@ def read_csv(path: Path) -> pd.DataFrame:
         return pd.read_csv(path)
     except EmptyDataError:
         return pd.DataFrame()
+
+
+@st.cache_data(ttl=60)
+def read_json(path: Path) -> dict[str, object]:
+    if not path.exists() or path.stat().st_size == 0:
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
 
 
 @st.cache_data(ttl=60)
@@ -1298,6 +1328,7 @@ picks = refresh_game_timing(read_csv(SHARPIE_PICKS))
 writeups = read_csv(SHARPIE_WRITEUPS)
 results = read_csv(SHARPIE_RESULTS_PUBLIC)
 lookup = read_csv(PLAYER_LOOKUP)
+sol_latest = read_json(SHARPIE_SOL_LATEST)
 
 date_candidates = [latest_date(picks, "pick_date")]
 if not lookup.empty:
@@ -1360,6 +1391,23 @@ with sharpie_tab:
         c3.markdown(f'<div class="card"><div class="label">Reserved / Cash</div><div class="big">{money(reserved)} / {money(cash_held)}</div></div>', unsafe_allow_html=True)
         c4.markdown(f'<div class="card"><div class="label">Projected EV</div><div class="big good">{money(expected_profit)}</div></div>', unsafe_allow_html=True)
 
+        sol_precision = sol_latest.get("precision_hybrid_card", {}) if isinstance(sol_latest, dict) else {}
+        sol_allocation = sol_latest.get("allocation_sol", {}).get("all", {}) if isinstance(sol_latest, dict) else {}
+        if sol_latest:
+            st.markdown("## Sol Precision Layer")
+            st.caption(
+                "Sol is Sharpie's independent walk-forward support model. It helps choose the second core play, "
+                "admits a third only when qualified, and applies price-aware sizing with a hard DraftKings ceiling of -265."
+            )
+            sc1, sc2, sc3, sc4 = st.columns(4)
+            sc1.metric("Validated Hit Rate", pct(sol_precision.get("hit_rate")), f"{int(sol_precision.get('picks', 0) or 0)} picks")
+            sc2.metric("Validated ROI", pct(sol_precision.get("roi")), f"{int(sol_precision.get('days', 0) or 0)} days")
+            sc3.metric("Sol Sizing ROI", pct(sol_allocation.get("roi")), "Walk-forward allocation")
+            sc4.metric("Card Rule", "2 Core + 1", "Qualified third only")
+            st.caption(
+                f"Research snapshot: {sol_latest.get('as_of', '--')}. Historical validation is informative, not a guarantee."
+            )
+
         reflection = previous_card_reflection(perf, str(run_date))
         st.markdown("## Sharpie's Previous Card Reflection")
         if not reflection.get("has_reflection"):
@@ -1412,11 +1460,13 @@ with sharpie_tab:
 
         st.markdown("## Today's Sharpie Card")
         for _, row in locked_today.iterrows():
+            sol_badge = '<span class="sol-badge">SOL SUPPORT</span>' if truthy(row.get("sharpie_sol_used")) else ""
+            sol_risk_badge = '<span class="sol-badge sol-risk-badge">SOL RISK WATCH</span>' if truthy(row.get("sharpie_sol_lead_risk_warning")) else ""
             st.markdown(
                 f"""
                 <div class="pick locked">
                   <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | {row.get('team', '')} vs {row.get('opponent', '')}</div>
-                  <div class="big">{row.get('player', '')} <span class="accent">{money(row.get('allocation'))}</span><span class="status-badge status-locked">LOCKED</span></div>
+                  <div class="big">{row.get('player', '')} <span class="accent">{money(row.get('allocation'))}</span><span class="status-badge status-locked">LOCKED</span>{sol_badge}{sol_risk_badge}</div>
                   <div>Bet committed: <strong>{money(row.get('allocation'))}</strong> | Odds: <strong>{row.get('odds', '--')}</strong> | Probability: <strong>{pct(row.get('sharpie_probability'))}</strong> | EV/$: <strong>{pct(row.get('sharpie_ev_per_dollar'))}</strong></div>
                 </div>
                 """,
@@ -1424,6 +1474,15 @@ with sharpie_tab:
             )
             if str(row.get("lock_rule", "")).strip():
                 st.markdown(f"**Lock rule:** {row.get('lock_rule', '')}")
+            if pd.notna(row.get("sharpie_sol_rank")) or pd.notna(row.get("sharpie_sol_probability")):
+                sol_rank = f"#{int(value(row, 'sharpie_sol_rank', 0))}" if value(row, "sharpie_sol_rank", 0) else "--"
+                sol_tier = str(row.get("sharpie_sol_support_tier", "") or "").strip()
+                st.markdown(
+                    f"**Sol read:** rank {sol_rank} at {pct(row.get('sharpie_sol_probability'))}"
+                    f"{f' | tier {sol_tier}' if sol_tier else ''}. {row.get('sharpie_sol_note', '')}"
+                )
+            if str(row.get("sharpie_sol_allocation_note", "") or "").strip():
+                st.markdown(f"**Sol sizing input:** {row.get('sharpie_sol_allocation_note', '')}")
             st.markdown(f"**Why this amount:** {row.get('sharpie_allocation_reason', '')}")
             st.markdown(f"**Why Sharpie likes it:** {row.get('what_sharpie_likes', '')}")
             st.markdown(f"**Main concern:** {row.get('sharpie_concern', '')}")
@@ -1433,11 +1492,13 @@ with sharpie_tab:
         if not hold_today.empty:
             st.markdown("## Hold Spots")
             for _, row in hold_today.iterrows():
+                sol_badge = '<span class="sol-badge">SOL SUPPORT</span>' if truthy(row.get("sharpie_sol_used")) else ""
+                sol_risk_badge = '<span class="sol-badge sol-risk-badge">SOL RISK WATCH</span>' if truthy(row.get("sharpie_sol_lead_risk_warning")) else ""
                 st.markdown(
                     f"""
                     <div class="hold-card">
                       <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | HOLD | {row.get('team', '')} vs {row.get('opponent', '')}</div>
-                      <div class="big">{row.get('player', '')} <span class="money-muted">$0 bet committed</span><span class="status-badge status-hold">HOLD</span></div>
+                      <div class="big">{row.get('player', '')} <span class="money-muted">$0 bet committed</span><span class="status-badge status-hold">HOLD</span>{sol_badge}{sol_risk_badge}</div>
                       <div>Reserved if conditions improve: <strong class="warn">{money(row.get('reserved_allocation'))}</strong> | Current odds: <strong>{row.get('current_snapshot_odds', row.get('odds', '--'))}</strong> | Projected probability: <strong>{pct(row.get('sharpie_probability'))}</strong></div>
                     </div>
                     """,
@@ -1445,6 +1506,12 @@ with sharpie_tab:
                 )
                 if str(row.get("lock_rule", "")).strip():
                     st.markdown(f"**Hold status:** {row.get('lock_rule', '')}")
+                if pd.notna(row.get("sharpie_sol_rank")) or pd.notna(row.get("sharpie_sol_probability")):
+                    sol_rank = f"#{int(value(row, 'sharpie_sol_rank', 0))}" if value(row, "sharpie_sol_rank", 0) else "--"
+                    st.markdown(
+                        f"**Sol read:** rank {sol_rank} at {pct(row.get('sharpie_sol_probability'))}. "
+                        f"{row.get('sharpie_sol_note', '')}"
+                    )
                 st.markdown(f"**Trigger:** {row.get('hold_trigger', '')}")
                 st.markdown(f"**Why hold it:** {row.get('sharpie_allocation_reason', '')}")
                 st.divider()
