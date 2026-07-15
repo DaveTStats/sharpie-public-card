@@ -1399,13 +1399,25 @@ with sharpie_tab:
                 "Sol is Sharpie's independent walk-forward support model. It helps choose the second core play, "
                 "admits a third only when qualified, and applies price-aware sizing with a hard DraftKings ceiling of -265."
             )
-            sc1, sc2, sc3, sc4 = st.columns(4)
+            sol_profit = float(sol_allocation.get("profit", 0) or 0)
+            sol_initial_bankroll = float(sol_allocation.get("initial_bankroll", 100) or 100)
+            sol_ending_bankroll = float(sol_allocation.get("ending_bankroll", sol_initial_bankroll + sol_profit) or 0)
+            sol_running_return = float(
+                sol_allocation.get(
+                    "return_on_initial_bankroll",
+                    sol_profit / sol_initial_bankroll if sol_initial_bankroll else 0,
+                )
+                or 0
+            )
+            sc1, sc2, sc3, sc4, sc5 = st.columns(5)
             sc1.metric("Validated Hit Rate", pct(sol_precision.get("hit_rate")), f"{int(sol_precision.get('picks', 0) or 0)} picks")
-            sc2.metric("Validated ROI", pct(sol_precision.get("roi")), f"{int(sol_precision.get('days', 0) or 0)} days")
-            sc3.metric("Sol Sizing ROI", pct(sol_allocation.get("roi")), "Walk-forward allocation")
-            sc4.metric("Card Rule", "2 Core + 1", "Qualified third only")
+            sc2.metric("$100 Test Bankroll", money(sol_ending_bankroll), f"{money(sol_profit)} profit")
+            sc3.metric("Running ROI", pct(sol_running_return), "Return on initial $100")
+            sc4.metric("Turnover ROI", pct(sol_allocation.get("roi")), f"{money(sol_allocation.get('stake'))} wagered")
+            sc5.metric("Card Rule", "2 Core + 1", "Qualified third only")
             st.caption(
-                f"Research snapshot: {sol_latest.get('as_of', '--')}. Historical validation is informative, not a guarantee."
+                f"Research snapshot: {sol_latest.get('as_of', '--')}. Running ROI uses the initial $100 as its denominator; "
+                "turnover ROI uses all recycled wagers. Stake sizes remain the tested fixed-dollar amounts rather than compounding upward."
             )
 
         reflection = previous_card_reflection(perf, str(run_date))
