@@ -111,4 +111,5 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-07-11,2,Jonathan Aranda,TB,SEA,-166.0,21.0,Locked,1.0,3.0,12.650602409638555,0.6024096385542169
 2026-07-12,1,Kevin McGonigle,DET,PHI,-181.0,31.0,Locked,0.0,0.0,-31.0,-1.0
 2026-07-12,2,Kyle Schwarber,PHI,DET,-160.0,21.0,Locked,1.0,2.0,13.125,0.625
-2026-07-16,1,Juan Soto,NYM,PHI,-235.0,21.0,Locked,,,,
+2026-07-16,1,Juan Soto,NYM,PHI,-235.0,21.0,Locked,1.0,1.0,8.936170212765958,0.4255319148936171
+2026-07-17,1,Jonathan Aranda,TB,BOS,-236.0,21.0,Locked,,,,
