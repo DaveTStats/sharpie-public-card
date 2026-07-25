@@ -131,6 +131,7 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-07-23,1,Ryan Jeffers,MIN,CLE,-176.0,29.0,Locked,1.0,1.0,16.47727272727273,0.5681818181818182
 2026-07-23,2,Mauricio Dubón,ATL,SD,-258.0,21.0,Locked,1.0,1.0,8.13953488372093,0.3875968992248062
 2026-07-23,3,Jonathan Aranda,TB,TOR,-239.0,21.0,Locked,0.0,0.0,-21.0,-1.0
-2026-07-24,1,Seiya Suzuki,CHC,PIT,-204.0,45.0,Locked,,,,
-2026-07-24,2,Kyle Stowers,MIA,SD,-258.0,34.0,Locked,,,,
-2026-07-24,3,Chase DeLauter,CLE,TB,-259.0,21.0,Locked,,,,
+2026-07-24,1,Seiya Suzuki,CHC,PIT,-204.0,45.0,Locked,0.0,0.0,-45.0,-1.0
+2026-07-24,2,Kyle Stowers,MIA,SD,-258.0,34.0,Locked,1.0,1.0,13.178294573643411,0.3875968992248062
+2026-07-24,3,Chase DeLauter,CLE,TB,-259.0,21.0,Locked,1.0,1.0,8.108108108108109,0.3861003861003861
+2026-07-25,1,Kevin McGonigle,DET,KC,-240.0,21.0,Locked,,,,
