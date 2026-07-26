@@ -134,6 +134,7 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-07-24,1,Seiya Suzuki,CHC,PIT,-204.0,45.0,Locked,0.0,0.0,-45.0,-1.0
 2026-07-24,2,Kyle Stowers,MIA,SD,-258.0,34.0,Locked,1.0,1.0,13.178294573643411,0.3875968992248062
 2026-07-24,3,Chase DeLauter,CLE,TB,-259.0,21.0,Locked,1.0,1.0,8.108108108108109,0.3861003861003861
-2026-07-25,1,Kevin McGonigle,DET,KC,-240.0,29.0,Locked,,,,
-2026-07-25,2,Kyle Stowers,MIA,SD,-218.0,21.0,Locked,,,,
-2026-07-25,3,Ben Rice,NYY,PHI,-241.0,21.0,Locked,,,,
+2026-07-25,1,Kevin McGonigle,DET,KC,-240.0,29.0,Locked,0.0,0.0,-29.0,-1.0
+2026-07-25,2,Kyle Stowers,MIA,SD,-218.0,21.0,Locked,1.0,1.0,9.63302752293578,0.45871559633027525
+2026-07-25,3,Ben Rice,NYY,PHI,-241.0,21.0,Locked,0.0,0.0,-21.0,-1.0
+2026-07-26,1,José Ramírez,CLE,TB,-212.0,21.0,Locked,,,,
