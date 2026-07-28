@@ -140,6 +140,7 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-07-26,1,José Ramírez,CLE,TB,-212.0,29.0,Locked,0.0,0.0,-29.0,-1.0
 2026-07-26,2,Max Muncy (LAD),ATH,NYM,-179.0,21.0,Locked,0.0,0.0,-21.0,-1.0
 2026-07-26,3,Sam Antonacci,CWS,HOU,-262.0,21.0,Locked,1.0,2.0,8.01526717557252,0.3816793893129771
-2026-07-27,1,Julio Rodríguez,SEA,TEX,-255.0,32.0,Locked,,,,
-2026-07-27,2,Brandon Nimmo,TEX,SEA,-237.0,21.0,Locked,,,,
-2026-07-27,3,Kevin McGonigle,DET,BAL,-237.0,21.0,Locked,,,,
+2026-07-27,1,Julio Rodríguez,SEA,TEX,-255.0,32.0,Locked,1.0,1.0,12.549019607843137,0.39215686274509803
+2026-07-27,2,Brandon Nimmo,TEX,SEA,-237.0,21.0,Locked,1.0,2.0,8.860759493670887,0.42194092827004226
+2026-07-27,3,Kevin McGonigle,DET,BAL,-237.0,21.0,Locked,1.0,2.0,8.860759493670887,0.42194092827004226
+2026-07-28,1,Chase DeLauter,CLE,CIN,-212.0,21.0,Locked,,,,
