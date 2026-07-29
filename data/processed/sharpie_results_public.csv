@@ -143,6 +143,7 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-07-27,1,Julio Rodríguez,SEA,TEX,-255.0,32.0,Locked,1.0,1.0,12.549019607843137,0.39215686274509803
 2026-07-27,2,Brandon Nimmo,TEX,SEA,-237.0,21.0,Locked,1.0,2.0,8.860759493670887,0.42194092827004226
 2026-07-27,3,Kevin McGonigle,DET,BAL,-237.0,21.0,Locked,1.0,2.0,8.860759493670887,0.42194092827004226
-2026-07-28,1,Chase DeLauter,CLE,CIN,-212.0,28.0,Locked,,,,
-2026-07-28,2,Jonathan Aranda,TB,TEX,-252.0,21.0,Locked,,,,
+2026-07-28,1,Chase DeLauter,CLE,CIN,-212.0,28.0,Locked,1.0,1.0,13.20754716981132,0.4716981132075472
+2026-07-28,2,Jonathan Aranda,TB,TEX,-252.0,21.0,Locked,1.0,2.0,8.333333333333332,0.39682539682539675
 2026-07-28,3,Corbin Carroll,AZ,PIT,-254.0,21.0,Locked,,,,
+2026-07-29,1,Brandon Lowe,PIT,AZ,-217.0,21.0,Locked,,,,
