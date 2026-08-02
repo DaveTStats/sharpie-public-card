@@ -154,6 +154,8 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-07-31,1,Ben Rice,NYY,CHC,-212.0,39.0,Locked,1.0,1.0,18.39622641509434,0.4716981132075472
 2026-07-31,2,Paul Goldschmidt,NYY,CHC,-222.0,21.0,Locked,0.0,0.0,-21.0,-1.0
 2026-07-31,3,Liam Hicks,MIA,NYM,-258.0,21.0,Locked,0.0,0.0,-21.0,-1.0
-2026-08-01,1,Ryan Jeffers,MIN,SEA,-159.0,28.0,Locked,,,,
-2026-08-01,2,Randy Arozarena,SEA,MIN,-221.0,21.0,Locked,,,,
-2026-08-01,3,Sam Antonacci,CWS,TB,-207.0,21.0,Locked,,,,
+2026-08-01,1,Ryan Jeffers,MIN,SEA,-159.0,28.0,Locked,1.0,1.0,17.61006289308176,0.6289308176100629
+2026-08-01,2,Randy Arozarena,SEA,MIN,-221.0,21.0,Locked,1.0,2.0,9.502262443438914,0.45248868778280543
+2026-08-01,3,Sam Antonacci,CWS,TB,-207.0,21.0,Locked,0.0,0.0,-21.0,-1.0
+2026-08-02,1,Jonathan Aranda,TB,CWS,-179.0,21.0,Locked,,,,
+2026-08-02,2,Liam Hicks,MIA,NYM,-247.0,21.0,Locked,,,,
