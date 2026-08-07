@@ -168,5 +168,5 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-08-05,1,Freddie Freeman,LAD,CHC,-248.0,29.0,Locked,1.0,1.0,11.693548387096774,0.4032258064516129
 2026-08-05,2,Andy Pages,LAD,CHC,-262.0,21.0,Locked,1.0,1.0,8.01526717557252,0.3816793893129771
 2026-08-05,3,Sal Stewart,CIN,ATH,-258.0,21.0,Locked,1.0,1.0,8.13953488372093,0.3875968992248062
-2026-08-06,1,Mike Trout,LAA,BAL,-207.0,25.0,Locked,,,,
-2026-08-06,2,Chase DeLauter,CLE,NYM,-245.0,21.0,Locked,,,,
+2026-08-06,1,Mike Trout,LAA,BAL,-207.0,25.0,Locked,0.0,0.0,-25.0,-1.0
+2026-08-06,2,Chase DeLauter,CLE,NYM,-245.0,21.0,Locked,1.0,2.0,8.571428571428571,0.40816326530612246
