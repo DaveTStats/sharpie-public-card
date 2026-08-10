@@ -176,6 +176,6 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-08-08,1,Drake Baldwin,ATL,NYY,-208.0,32.0,Locked,1.0,1.0,15.384615384615385,0.4807692307692308
 2026-08-08,2,Paul Goldschmidt,NYY,ATL,-203.0,21.0,Locked,1.0,1.0,10.344827586206897,0.49261083743842365
 2026-08-08,3,JJ Wetherholt,STL,COL,-261.0,21.0,Locked,1.0,1.0,8.045977011494253,0.3831417624521073
-2026-08-09,1,CJ Abrams,WSH,CIN,-253.0,31.0,Locked,,,,
-2026-08-09,2,Mike Trout,LAA,MIA,-199.0,21.0,Locked,,,,
-2026-08-09,3,Gunnar Henderson,BAL,TEX,-264.0,21.0,Locked,,,,
+2026-08-09,1,CJ Abrams,WSH,CIN,-253.0,31.0,Locked,1.0,1.0,12.25296442687747,0.3952569169960474
+2026-08-09,2,Mike Trout,LAA,MIA,-199.0,21.0,Locked,0.0,0.0,-21.0,-1.0
+2026-08-09,3,Gunnar Henderson,BAL,TEX,-264.0,21.0,Locked,0.0,0.0,-21.0,-1.0
