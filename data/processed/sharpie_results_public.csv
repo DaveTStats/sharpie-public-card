@@ -184,6 +184,7 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-08-11,1,Kevin McGonigle,DET,CLE,-234.0,45.0,Locked,1.0,2.0,19.23076923076923,0.42735042735042733
 2026-08-11,2,Gunnar Henderson,BAL,MIN,-250.0,34.0,Locked,1.0,3.0,13.600000000000001,0.4
 2026-08-11,3,Randy Arozarena,SEA,NYY,-243.0,21.0,Locked,1.0,1.0,8.641975308641976,0.41152263374485604
-2026-08-12,1,Trevor Larnach,MIN,BAL,-191.0,42.0,Locked,,,,
-2026-08-12,2,Gunnar Henderson,BAL,MIN,-258.0,21.0,Locked,,,,
-2026-08-12,3,Seiya Suzuki,CHC,WSH,-258.0,21.0,Locked,,,,
+2026-08-12,1,Trevor Larnach,MIN,BAL,-191.0,42.0,Locked,1.0,1.0,21.98952879581152,0.5235602094240838
+2026-08-12,2,Gunnar Henderson,BAL,MIN,-258.0,21.0,Locked,0.0,0.0,-21.0,-1.0
+2026-08-12,3,Seiya Suzuki,CHC,WSH,-258.0,21.0,Locked,1.0,2.0,8.13953488372093,0.3875968992248062
+2026-08-13,1,Dillon Dingler,DET,CLE,-221.0,21.0,Locked,,,,
