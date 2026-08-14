@@ -187,6 +187,6 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-08-12,1,Trevor Larnach,MIN,BAL,-191.0,42.0,Locked,1.0,1.0,21.98952879581152,0.5235602094240838
 2026-08-12,2,Gunnar Henderson,BAL,MIN,-258.0,21.0,Locked,0.0,0.0,-21.0,-1.0
 2026-08-12,3,Seiya Suzuki,CHC,WSH,-258.0,21.0,Locked,1.0,2.0,8.13953488372093,0.3875968992248062
-2026-08-13,1,Dillon Dingler,DET,CLE,-221.0,28.0,Locked,,,,
-2026-08-13,2,Chase Meidroth,CWS,CIN,-265.0,21.0,Locked,,,,
-2026-08-13,3,Xavier Edwards,MIA,PIT,-256.0,21.0,Locked,,,,
+2026-08-13,1,Dillon Dingler,DET,CLE,-221.0,28.0,Locked,0.0,0.0,-28.0,-1.0
+2026-08-13,2,Chase Meidroth,CWS,CIN,-265.0,21.0,Locked,1.0,2.0,7.924528301886793,0.37735849056603776
+2026-08-13,3,Xavier Edwards,MIA,PIT,-256.0,21.0,Locked,0.0,0.0,-21.0,-1.0
