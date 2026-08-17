@@ -1220,6 +1220,43 @@ def sharpie_performance(picks: pd.DataFrame, results: pd.DataFrame) -> pd.DataFr
     return merged
 
 
+def rank1_weekday_performance(performance: pd.DataFrame) -> pd.DataFrame:
+    columns = ["Day", "Record", "Hit Rate", "Profit", "ROI", "Avg Odds"]
+    required = {"pick_date", "sharpie_rank", "actual_hit"}
+    if performance.empty or not required.issubset(performance.columns):
+        return pd.DataFrame(columns=columns)
+    work = performance.copy()
+    for column in ["sharpie_rank", "actual_hit", "allocation", "profit", "odds"]:
+        work[column] = pd.to_numeric(work.get(column), errors="coerce")
+    work["pick_date"] = pd.to_datetime(work["pick_date"], errors="coerce")
+    work = work[
+        work["sharpie_rank"].eq(1)
+        & work["actual_hit"].isin([0, 1])
+        & work["allocation"].fillna(0).gt(0)
+        & work["pick_date"].notna()
+    ].copy()
+    if work.empty:
+        return pd.DataFrame(columns=columns)
+    order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    work["Day"] = work["pick_date"].dt.day_name()
+    summary = (
+        work.groupby("Day", observed=True)
+        .agg(
+            Picks=("actual_hit", "size"),
+            Hits=("actual_hit", "sum"),
+            **{"Hit Rate": ("actual_hit", "mean"), "Staked": ("allocation", "sum"), "Profit": ("profit", "sum"), "Avg Odds": ("odds", "mean")},
+        )
+        .reindex(order)
+        .dropna(subset=["Picks"])
+        .reset_index()
+    )
+    summary["Picks"] = summary["Picks"].astype(int)
+    summary["Hits"] = summary["Hits"].astype(int)
+    summary["Record"] = summary["Hits"].astype(str) + "-" + (summary["Picks"] - summary["Hits"]).astype(str)
+    summary["ROI"] = summary["Profit"] / summary["Staked"].replace(0, pd.NA)
+    return summary[columns]
+
+
 def previous_card_reflection(perf: pd.DataFrame, run_date: str) -> dict[str, object]:
     if perf.empty or "actual_hit" not in perf.columns or "pick_date" not in perf.columns:
         return {
@@ -1699,6 +1736,18 @@ else:
     p2.metric("Hit Rate", pct(hit_rate))
     p3.metric("Profit", money(profit))
     p4.metric("ROI", pct(roi))
+    st.markdown("### #1 Pick Performance By Weekday")
+    st.caption("Running resolved results for Sharpie's lead pick; unresolved games and excluded dates are omitted.")
+    weekday_rank1 = rank1_weekday_performance(resolved)
+    if weekday_rank1.empty:
+        st.info("Weekday results will populate after number-one picks resolve.")
+    else:
+        weekday_display = weekday_rank1.copy()
+        weekday_display["Hit Rate"] = weekday_display["Hit Rate"].map(lambda value: f"{value:.1%}")
+        weekday_display["Profit"] = weekday_display["Profit"].map(money)
+        weekday_display["ROI"] = weekday_display["ROI"].map(pct)
+        weekday_display["Avg Odds"] = weekday_display["Avg Odds"].map(lambda value: f"{value:+.0f}")
+        st.dataframe(weekday_display, use_container_width=True, hide_index=True)
     show_cols = [
         "pick_date",
         "sharpie_rank",
