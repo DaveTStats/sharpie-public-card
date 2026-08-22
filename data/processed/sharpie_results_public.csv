@@ -211,4 +211,5 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-08-20,3,Randy Arozarena,SEA,MIL,-234.0,21.0,Locked,0.0,0.0,-21.0,-1.0
 2026-08-21,1,Griffin Conine,MIA,WSH,-165.0,45.0,Locked,0.0,0.0,-45.0,-1.0
 2026-08-21,2,Jose Altuve,HOU,ATH,-248.0,36.0,Locked,1.0,2.0,14.516129032258064,0.4032258064516129
-2026-08-22,1,Vladimir Guerrero Jr.,TOR,NYY,-231.0,21.0,Locked,,,,
+2026-08-22,1,Vladimir Guerrero Jr.,TOR,NYY,-231.0,32.0,Locked,,,,
+2026-08-22,2,Alec Bohm,PHI,STL,-262.0,21.0,Locked,,,,
