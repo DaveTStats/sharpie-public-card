@@ -214,6 +214,6 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-08-22,1,Vladimir Guerrero Jr.,TOR,NYY,-231.0,32.0,Locked,1.0,2.0,13.852813852813853,0.4329004329004329
 2026-08-22,2,Alec Bohm,PHI,STL,-262.0,21.0,Locked,1.0,2.0,8.01526717557252,0.3816793893129771
 2026-08-22,3,Mookie Betts,LAD,PIT,-257.0,21.0,Locked,0.0,0.0,-21.0,-1.0
-2026-08-23,1,Jonathan Aranda,TB,BAL,-247.0,28.0,Locked,,,,
-2026-08-23,2,Vladimir Guerrero Jr.,TOR,NYY,-249.0,21.0,Locked,,,,
-2026-08-23,3,Francisco Lindor,NYM,CWS,-264.0,21.0,Locked,,,,
+2026-08-23,1,Jonathan Aranda,TB,BAL,-247.0,28.0,Locked,1.0,1.0,11.336032388663968,0.4048582995951417
+2026-08-23,2,Vladimir Guerrero Jr.,TOR,NYY,-249.0,21.0,Locked,0.0,0.0,-21.0,-1.0
+2026-08-23,3,Francisco Lindor,NYM,CWS,-264.0,21.0,Locked,1.0,2.0,7.954545454545454,0.3787878787878788
