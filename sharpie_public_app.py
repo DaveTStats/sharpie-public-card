@@ -1511,11 +1511,12 @@ with sharpie_tab:
         for _, row in locked_today.iterrows():
             sol_badge = '<span class="sol-badge">SOL SUPPORT</span>' if truthy(row.get("sharpie_sol_used")) else ""
             sol_risk_badge = '<span class="sol-badge sol-risk-badge">SOL RISK WATCH</span>' if truthy(row.get("sharpie_sol_lead_risk_warning")) else ""
+            gold_star_badge = '<span class="sol-badge" style="border-color:#ffd24a;color:#ffd24a;background:rgba(255,210,74,.14);">&#9733; GOLD STAR</span>' if truthy(row.get("sharpie_rank1_gold_star")) else ""
             st.markdown(
                 f"""
                 <div class="pick locked">
                   <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | {row.get('team', '')} vs {row.get('opponent', '')}</div>
-                  <div class="big">{row.get('player', '')} <span class="accent">{money(row.get('allocation'))}</span><span class="status-badge status-locked">LOCKED</span>{sol_badge}{sol_risk_badge}</div>
+                  <div class="big">{row.get('player', '')}{gold_star_badge} <span class="accent">{money(row.get('allocation'))}</span><span class="status-badge status-locked">LOCKED</span>{sol_badge}{sol_risk_badge}</div>
                   <div>Bet committed: <strong>{money(row.get('allocation'))}</strong> | Odds: <strong>{row.get('odds', '--')}</strong> | Probability: <strong>{pct(row.get('sharpie_probability'))}</strong> | EV/$: <strong>{pct(row.get('sharpie_ev_per_dollar'))}</strong></div>
                 </div>
                 """,
@@ -1532,6 +1533,8 @@ with sharpie_tab:
                 )
             if str(row.get("sharpie_sol_allocation_note", "") or "").strip():
                 st.markdown(f"**Sol sizing input:** {row.get('sharpie_sol_allocation_note', '')}")
+            if truthy(row.get("sharpie_rank1_gold_star")):
+                st.markdown(f"**Gold Star filter:** {row.get('sharpie_rank1_gold_star_note', '')}")
             st.markdown(f"**Why this amount:** {row.get('sharpie_allocation_reason', '')}")
             st.markdown(f"**Why Sharpie likes it:** {row.get('what_sharpie_likes', '')}")
             st.markdown(f"**Main concern:** {row.get('sharpie_concern', '')}")
@@ -1543,11 +1546,12 @@ with sharpie_tab:
             for _, row in hold_today.iterrows():
                 sol_badge = '<span class="sol-badge">SOL SUPPORT</span>' if truthy(row.get("sharpie_sol_used")) else ""
                 sol_risk_badge = '<span class="sol-badge sol-risk-badge">SOL RISK WATCH</span>' if truthy(row.get("sharpie_sol_lead_risk_warning")) else ""
+                gold_star_badge = '<span class="sol-badge" style="border-color:#ffd24a;color:#ffd24a;background:rgba(255,210,74,.14);">&#9733; GOLD STAR</span>' if truthy(row.get("sharpie_rank1_gold_star")) else ""
                 st.markdown(
                     f"""
                     <div class="hold-card">
                       <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | HOLD | {row.get('team', '')} vs {row.get('opponent', '')}</div>
-                      <div class="big">{row.get('player', '')} <span class="money-muted">$0 bet committed</span><span class="status-badge status-hold">HOLD</span>{sol_badge}{sol_risk_badge}</div>
+                      <div class="big">{row.get('player', '')}{gold_star_badge} <span class="money-muted">$0 bet committed</span><span class="status-badge status-hold">HOLD</span>{sol_badge}{sol_risk_badge}</div>
                       <div>Reserved if conditions improve: <strong class="warn">{money(row.get('reserved_allocation'))}</strong> | Current odds: <strong>{row.get('current_snapshot_odds', row.get('odds', '--'))}</strong> | Projected probability: <strong>{pct(row.get('sharpie_probability'))}</strong></div>
                     </div>
                     """,
@@ -1561,6 +1565,8 @@ with sharpie_tab:
                         f"**Sol read:** rank {sol_rank} at {pct(row.get('sharpie_sol_probability'))}. "
                         f"{row.get('sharpie_sol_note', '')}"
                     )
+                if truthy(row.get("sharpie_rank1_gold_star")):
+                    st.markdown(f"**Gold Star filter:** {row.get('sharpie_rank1_gold_star_note', '')}")
                 st.markdown(f"**Trigger:** {row.get('hold_trigger', '')}")
                 st.markdown(f"**Why hold it:** {row.get('sharpie_allocation_reason', '')}")
                 st.divider()
