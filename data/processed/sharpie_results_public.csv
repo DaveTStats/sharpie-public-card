@@ -243,4 +243,5 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-08-31,3,Brandon Nimmo,TEX,ATH,-239.0,21.0,Locked,1.0,2.0,8.786610878661087,0.4184100418410041
 2026-09-01,1,Dominic Canzone,SEA,BOS,-200.0,45.0,Locked,1.0,1.0,22.5,0.5
 2026-09-01,2,Chase DeLauter,CLE,TOR,-222.0,45.0,Locked,0.0,0.0,-45.0,-1.0
-2026-09-02,1,James Wood,WSH,ATL,-197.0,21.0,Locked,,,,
+2026-09-02,1,James Wood,WSH,ATL,-197.0,25.0,Locked,,,,
+2026-09-02,2,Ezequiel Duran,TEX,ATH,-229.0,21.0,Locked,,,,
