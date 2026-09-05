@@ -13,6 +13,7 @@ except ImportError:  # pragma: no cover - Streamlit Cloud fallback for older Pyt
 
 import pandas as pd
 import streamlit as st
+from scout_mobile import mobile_style, render_scout
 from pandas.errors import EmptyDataError
 
 
@@ -1408,7 +1409,13 @@ st.markdown(
 
 st.caption("Informational model output only. Betting involves risk. Odds and lineups can move after this card is published.")
 
-sharpie_tab, parlay_tab, roi_tab = st.tabs(["Sharpie's Top 3", "Best Parlay", "Locked ROI Edge"])
+mobile_style()
+if st.button("Refresh board", key="refresh_public_board", help="Reload published picks and research data"):
+    st.cache_data.clear()
+    st.rerun()
+sharpie_tab, parlay_tab, roi_tab, scout_tab = st.tabs(["Sharpie", "Parlay", "ROI Edge", "Scout"])
+with scout_tab:
+    render_scout(ROOT)
 
 with sharpie_tab:
     if today.empty:
