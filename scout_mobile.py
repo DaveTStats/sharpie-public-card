@@ -1,5 +1,6 @@
 """Public, read-only Scout research board and mobile presentation."""
 from pathlib import Path
+import json
 import pandas as pd
 import streamlit as st
 
@@ -45,6 +46,17 @@ def render_scout(root):
     folder=Path(root)/'outputs/astra_validation'
     st.subheader('Scout | Research Dugout')
     st.caption('Independent challenger • paper selections • Astra research')
+    strategy_path=folder/'scout_strategy.json'
+    if strategy_path.exists():
+        strategy=json.loads(strategy_path.read_text(encoding='utf-8'))
+        st.markdown('**Scout Select | Candidate strategy**')
+        st.write('Confirmed lineup spots 1–2, odds -250 to -100, hitter xBA at least .260 and opposing pitcher xBA allowed at least .250. Select one hitter by calibrated BookBias probability; pass when nobody qualifies.')
+        result=strategy['later_validation']
+        a,b,c=st.columns(3)
+        a.metric('Later-period record',f"{result['hits']}/{result['bets']}")
+        b.metric('Hit rate',f"{result['hit_rate']:.1%}")
+        c.metric('Flat-bet ROI',f"{result['roi']:+.1%}")
+        st.caption('Exploratory historical replay, not live results. The general board below is the original Scout blend, not Scout Select’s official daily card.')
     boards=sorted(folder.glob('shadow_*.csv'),reverse=True)
     if not boards:
         st.info('Scout is waiting for its first daily research board.')
