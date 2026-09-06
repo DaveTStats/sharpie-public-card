@@ -255,4 +255,6 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-09-05,1,Heriberto Hernández,MIA,CHC,-164.0,32.0,Locked,0.0,0.0,-32.0,-1.0
 2026-09-05,2,Francisco Lindor,NYM,SF,-242.0,21.0,Locked,0.0,0.0,-21.0,-1.0
 2026-09-05,3,Fernando Tatis Jr.,SD,NYY,-240.0,21.0,Locked,0.0,0.0,-21.0,-1.0
-2026-09-06,1,Kyle Schwarber,PHI,ATL,-156.0,21.0,Locked,,,,
+2026-09-06,1,Kyle Schwarber,PHI,ATL,-156.0,28.0,Locked,,,,
+2026-09-06,2,Kevin McGonigle,DET,CLE,-168.0,21.0,Locked,,,,
+2026-09-06,3,Christian Yelich,MIL,CIN,-256.0,21.0,Locked,,,,
