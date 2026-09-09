@@ -1,0 +1,2 @@
+date,player,team,opponent,game_pk,player_id,odds,start_utc,captured_at_utc,lineup_confirmed,version,status,ranking_probability,actual_hit,unit_profit
+2026-09-09,James Wood,WSH,SD,823251,695578,-193.0,2026-09-09T20:10:00+00:00,2026-09-09T18:30:40.277143+00:00,True,scout-select-v1,Paper Locked,0.5787,,
