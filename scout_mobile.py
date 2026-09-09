@@ -46,6 +46,19 @@ def render_scout(root):
     folder=Path(root)/'outputs/astra_validation'
     st.subheader('Scout | Research Dugout')
     st.caption('Independent challenger • paper selections • Astra research')
+    official=read(folder/'scout_official_picks.csv')
+    st.markdown('**Official Scout Select paper card**')
+    if len(official):
+        st.dataframe(official[['date','player','team','opponent','odds','status','actual_hit','unit_profit']].sort_values('date',ascending=False),hide_index=True,use_container_width=True)
+        settled=official[official.status.eq('Resolved')]
+        if len(settled):
+            st.write(f"Tracked: {int(settled.actual_hit.sum())}/{len(settled)} hits | {settled.unit_profit.mean():+.1%} flat paper ROI")
+    else:
+        st.info('No official Scout Select pick has been recorded yet.')
+    statuses=sorted(folder.glob('scout_status_*.json'))
+    if statuses:
+        state=json.loads(statuses[-1].read_text(encoding='utf-8'))
+        st.caption(state['date']+': '+state['reason'])
     strategy_path=folder/'scout_strategy.json'
     if strategy_path.exists():
         strategy=json.loads(strategy_path.read_text(encoding='utf-8'))
@@ -56,7 +69,7 @@ def render_scout(root):
         a.metric('Later-period record',f"{result['hits']}/{result['bets']}")
         b.metric('Hit rate',f"{result['hit_rate']:.1%}")
         c.metric('Flat-bet ROI',f"{result['roi']:+.1%}")
-        st.caption('Exploratory historical replay, not live results. The general board below is the original Scout blend, not Scout Select’s official daily card.')
+        st.caption('Exploratory historical replay. The searchable board below is the original Scout blend; official Scout Select picks are recorded above.')
     boards=sorted(folder.glob('shadow_*.csv'),reverse=True)
     if not boards:
         st.info('Scout is waiting for its first daily research board.')
