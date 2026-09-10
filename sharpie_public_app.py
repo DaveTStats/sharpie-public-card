@@ -1413,7 +1413,10 @@ mobile_style()
 if st.button("Refresh board", key="refresh_public_board", help="Reload published picks and research data"):
     st.cache_data.clear()
     st.rerun()
-sharpie_tab, parlay_tab, roi_tab, scout_tab = st.tabs(["Sharpie", "Parlay", "ROI Edge", "Scout"])
+sharpie_tab, parlay_tab, roi_tab, scout_tab, audit_tab = st.tabs(["Sharpie", "Parlay", "ROI Edge", "Scout", "Price Audit"])
+with audit_tab:
+    from price_decision_audit import render as render_price_audit
+    render_price_audit(ROOT)
 with scout_tab:
     render_scout(ROOT)
 
