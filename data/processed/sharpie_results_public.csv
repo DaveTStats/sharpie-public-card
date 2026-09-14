@@ -272,5 +272,5 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-09-11,2,Mike Trout,LAA,WSH,-169.0,21.0,Locked,1.0,1.0,12.42603550295858,0.591715976331361
 2026-09-12,1,TJ Rumfield,COL,DET,-190.0,28.0,Locked,1.0,3.0,14.736842105263158,0.5263157894736842
 2026-09-12,2,Lars Nootbaar,AZ,TEX,-171.0,21.0,Locked,,,,
-2026-09-13,1,Adael Amador,COL,DET,-179.0,30.0,Locked,,,,
-2026-09-13,2,Oneil Cruz,PIT,CHC,-163.0,21.0,Locked,,,,
+2026-09-13,1,Adael Amador,COL,DET,-179.0,30.0,Locked,1.0,1.0,16.75977653631285,0.5586592178770949
+2026-09-13,2,Oneil Cruz,PIT,CHC,-163.0,21.0,Locked,1.0,1.0,12.883435582822086,0.6134969325153374
