@@ -278,4 +278,5 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-09-14,2,Dane Myers,CIN,LAD,-161.0,23.0,Locked,1.0,1.0,14.285714285714285,0.6211180124223602
 2026-09-15,1,Elly De La Cruz,CIN,LAD,-185.0,30.0,Locked,1.0,2.0,16.216216216216218,0.5405405405405406
 2026-09-15,2,Drake Baldwin,ATL,CHC,-217.0,24.0,Locked,1.0,2.0,11.059907834101383,0.4608294930875576
-2026-09-16,1,Miguel Vargas,CWS,CLE,-168.0,21.0,Locked,,,,
+2026-09-16,1,Miguel Vargas,CWS,CLE,-168.0,30.0,Locked,,,,
+2026-09-16,2,Elly De La Cruz,CIN,LAD,-137.0,21.0,Locked,,,,
