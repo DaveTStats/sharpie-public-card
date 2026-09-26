@@ -294,6 +294,8 @@ pick_date,sharpie_rank,player,team,opponent,odds,allocation,bet_status,actual_hi
 2026-09-23,2,José Ramírez,CLE,BOS,-195.0,24.0,Locked,0.0,0.0,-24.0,-1.0
 2026-09-24,1,Heriberto Hernández,MIA,CHC,-138.0,30.0,Locked,0.0,0.0,-30.0,-1.0
 2026-09-24,2,Liam Hicks,TB,NYY,-133.0,21.0,Locked,0.0,0.0,-21.0,-1.0
-2026-09-25,1,Roman Anthony,BOS,CHC,-148.0,31.0,Locked,,,,
-2026-09-25,2,Pete Alonso,BAL,NYY,-176.0,24.0,Locked,,,,
-2026-09-25,3,James Wood,WSH,NYM,-176.0,24.0,Locked,,,,
+2026-09-25,1,Roman Anthony,BOS,CHC,-148.0,31.0,Locked,1.0,1.0,20.945945945945944,0.6756756756756757
+2026-09-25,2,Pete Alonso,BAL,NYY,-176.0,24.0,Locked,1.0,3.0,13.636363636363637,0.5681818181818182
+2026-09-25,3,James Wood,WSH,NYM,-176.0,24.0,Locked,1.0,2.0,13.636363636363637,0.5681818181818182
+2026-09-26,1,Brandon Lowe,PIT,DET,-204.0,23.0,Locked,,,,
+2026-09-26,2,Oneil Cruz,PIT,DET,-183.0,21.0,Locked,,,,
