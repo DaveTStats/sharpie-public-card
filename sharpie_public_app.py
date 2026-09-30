@@ -28,6 +28,7 @@ PARLAY_PREDICTOR_BACKTEST = ROOT / "data" / "processed" / "parlay_predictor_back
 SHARPIE_PARLAYS = ROOT / "data" / "processed" / "sharpie_parlays.csv"
 SHARPIE_BEST_PARLAY_LOCKED = ROOT / "data" / "processed" / "sharpie_best_parlay_locked.csv"
 SHARPIE_TOP3_PARLAY_BACKTEST = ROOT / "data" / "processed" / "sharpie_top3_only_parlay_backtest.csv"
+PARLAY_STAKING_ENABLED = False
 SHARPIE_SOL_LATEST = ROOT / "data" / "processed" / "sharpie_sol_latest.json"
 ANALYSIS_DIR = ROOT / "outputs" / "analysis"
 SHARPIE_EXCLUDED_PERFORMANCE_DATES = {"2026-05-23"}
@@ -909,7 +910,7 @@ def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]
         ].copy()
         if not primary.empty:
             row = primary.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
-            return row, "HOLD", "Grade A - Predictor A", "Live candidate only. It clears the strongest historical rule, but it can rotate until the earliest leg reaches the 60-minute lock window."
+            return row, "RESEARCH ONLY", "Grade A - Predictor A", "Exploratory candidate only. The audited parlay strategy remains quarantined and carries no recommended stake."
 
         secondary = predictor[
             predictor["combined_american_odds"].le(160)
@@ -918,11 +919,11 @@ def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]
         ].copy()
         if not secondary.empty:
             row = secondary.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
-            return row, "HOLD", "Grade B - Predictor B", "Live candidate only. It uses the broader controlled-price rule, but it can rotate until the earliest leg reaches the 60-minute lock window."
+            return row, "RESEARCH ONLY", "Grade B - Predictor B", "Exploratory candidate only. The audited parlay strategy remains quarantined and carries no recommended stake."
 
         if not predictor.empty:
             row = predictor.sort_values(["parlay_probability", "parlay_ev_per_dollar", "parlay_predictor_score"], ascending=False).iloc[0]
-            return row, "HOLD", "No Grade - Predictor Watchlist", "Best available parlay does not clear Sharpie's controlled-price filters yet and remains live until the lock window."
+            return row, "RESEARCH ONLY", "No Grade - Predictor Watchlist", "Exploratory watchlist only. The audited parlay strategy remains quarantined and carries no recommended stake."
 
     official = read_csv(SHARPIE_PARLAYS)
     if official.empty:
@@ -939,14 +940,14 @@ def current_best_parlay(run_date: str) -> tuple[pd.Series | None, str, str, str]
         return None, "NO CARD", "No Current Parlay", "No current parlay row is available."
     row = official.sort_values(["parlay_probability", "parlay_ev_per_dollar"], ascending=False).iloc[0]
     raw_status = str(row.get("bet_status", "") or "").upper()
-    status = "LOCKED" if raw_status == "LOCKED" else "HOLD"
+    status = "LOCKED" if raw_status == "LOCKED" else "RESEARCH ONLY"
     grade = "Grade C - Top 3 Backup" if status == "BET CANDIDATE" else "No Grade - Official Watchlist"
     return row, status, grade, "Using Sharpie's official parlay file because the predictor card was not available."
 
 
 def render_best_parlay_tab(run_date: str) -> None:
     st.markdown("## Sharpie's Best 2-Leg Parlay")
-    st.caption("This uses the historical parlay edge Sharpie found: controlled two-leg prices, preferably +140 or shorter, with modeled parlay probability of 44%+.")
+    st.caption("Research lab only. New parlay staking is quarantined after the full historical audit; candidates remain visible for forward tracking at $0.")
     row, status, rule, note = current_best_parlay(run_date)
     perf_rows = parlay_performance_rows()
 
@@ -954,7 +955,7 @@ def render_best_parlay_tab(run_date: str) -> None:
         st.info(note)
     else:
         badge_class = "status-locked" if status.startswith("LOCKED") else "status-hold"
-        stake_note = "Small 0.25u to 0.50u only" if status == "LOCKED" else "$0 until this card locks"
+        stake_note = "Previously committed; retained for accountability" if status == "LOCKED" else "$0 research tracking only"
         st.markdown(
             f"""
             <div class="parlay-card">
@@ -988,6 +989,7 @@ def render_best_parlay_tab(run_date: str) -> None:
             st.markdown(f"**What worries Sharpie:** {risk}")
 
     st.markdown("## Strategy Performance")
+    st.caption("Exploratory filter history, not a live staking recommendation. These subsets are monitored for forward validation and multiple-testing risk.")
     if perf_rows.empty:
         st.info("Parlay strategy performance will appear once the backtest files are published.")
     else:
