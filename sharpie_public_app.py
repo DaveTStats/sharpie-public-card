@@ -1521,14 +1521,15 @@ with sharpie_tab:
         for _, row in locked_today.iterrows():
             sol_badge = '<span class="sol-badge">SOL SUPPORT</span>' if truthy(row.get("sharpie_sol_used")) else ""
             sol_risk_badge = '<span class="sol-badge sol-risk-badge">SOL RISK WATCH</span>' if truthy(row.get("sharpie_sol_lead_risk_warning")) else ""
+            scout_badge = '<span class="sol-badge" style="border-color:#63d9c4;color:#85f3df;background:rgba(99,217,196,.14);">SCOUT SUPPORT</span>' if truthy(row.get("sharpie_scout_support")) else ""
             gold_star_badge = '<span class="sol-badge" style="border-color:#ffd24a;color:#ffd24a;background:rgba(255,210,74,.14);">&#9733; GOLD STAR</span>' if truthy(row.get("sharpie_rank1_gold_star")) else ""
-            streak_warning_badge = '<span class="sol-badge" style="border-color:#ff6b57;color:#ff9a88;background:rgba(255,75,65,.20);">STREAK WARNING</span>' if truthy(row.get("sharpie_rank1_streak_warning")) else ""
+            streak_warning_badge = '<span class="sol-badge" style="border-color:#ff6b57;color:#ffb2a5;background:rgba(255,75,65,.12);">STREAK CONTEXT</span>' if truthy(row.get("sharpie_rank1_streak_warning")) else ""
             st.markdown(
                 f"""
                 <div class="pick locked">
                   <div class="label">#{int(float(row.get('sharpie_rank', 0) or 0))} | {row.get('team', '')} vs {row.get('opponent', '')}</div>
-                  <div class="big">{row.get('player', '')}{gold_star_badge}{streak_warning_badge} <span class="accent">{money(row.get('allocation'))}</span><span class="status-badge status-locked">LOCKED</span>{sol_badge}{sol_risk_badge}</div>
-                  <div>Bet committed: <strong>{money(row.get('allocation'))}</strong> | Odds: <strong>{row.get('odds', '--')}</strong> | Probability: <strong>{pct(row.get('sharpie_probability'))}</strong> | EV/$: <strong>{pct(row.get('sharpie_ev_per_dollar'))}</strong></div>
+                  <div class="big">{row.get('player', '')}{gold_star_badge}{streak_warning_badge} <span class="accent">{money(row.get('allocation'))}</span><span class="status-badge status-locked">LOCKED</span>{scout_badge}{sol_badge}{sol_risk_badge}</div>
+                  <div>Bet committed: <strong>{money(row.get('allocation'))}</strong> | Odds: <strong>{row.get('odds', '--')}</strong> | Rank-calibrated probability: <strong>{pct(row.get('sharpie_rank_calibrated_probability'))}</strong> | Calibrated EV/$: <strong>{pct(row.get('sharpie_rank_calibrated_ev'))}</strong></div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -1544,10 +1545,14 @@ with sharpie_tab:
                 )
             if str(row.get("sharpie_sol_allocation_note", "") or "").strip():
                 st.markdown(f"**Sol sizing input:** {row.get('sharpie_sol_allocation_note', '')}")
+            if truthy(row.get("sharpie_scout_support")):
+                st.markdown(f"**Scout confirmation:** {row.get('sharpie_scout_note', '')}")
+            if str(row.get("sharpie_rank_calibration_note", "") or "").strip():
+                st.markdown(f"**Rank calibration:** {row.get('sharpie_rank_calibration_note', '')}")
             if truthy(row.get("sharpie_rank1_gold_star")):
                 st.markdown(f"**Gold Star filter:** {row.get('sharpie_rank1_gold_star_note', '')}")
             if truthy(row.get("sharpie_rank1_streak_warning")):
-                st.error(str(row.get("sharpie_rank1_streak_warning_note", "")))
+                st.info(str(row.get("sharpie_rank1_streak_warning_note", "")))
             st.markdown(f"**Why this amount:** {row.get('sharpie_allocation_reason', '')}")
             st.markdown(f"**Why Sharpie likes it:** {row.get('what_sharpie_likes', '')}")
             st.markdown(f"**Main concern:** {row.get('sharpie_concern', '')}")
