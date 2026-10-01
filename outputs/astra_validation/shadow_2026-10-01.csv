@@ -1,0 +1,14 @@
+date,player,team,opponent,odds,astra_probability,astra_ev,captured_at_utc,version,status
+2026-10-01,mike yastrzemski,atl,phi,-117,0.5406790879489074,0.0027979665377171337,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,sean murphy,atl,phi,-114,0.5320177246796021,-0.0013000606891679922,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,brandon marsh,phi,atl,-160,0.614423642184994,-0.0015615814493847857,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,kyle schwarber,phi,atl,-171,0.6283169894742361,-0.004246174575918249,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,matt olson,atl,phi,-194,0.6538570572818019,-0.009103222469846628,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,bryce harper,phi,atl,-221,0.6744180946172968,-0.020415346732342576,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,austin riley,atl,phi,-137,0.5637546203576651,-0.024745656753528245,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,drake baldwin,atl,phi,-257,0.7004253120837227,-0.02703565597708557,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,ozzie albies,atl,phi,-178,0.6134314693847726,-0.04194410961254624,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,ronald acuna jr.,atl,phi,-266,0.6850693126347627,-0.05738583299126632,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,mauricio dubon,atl,phi,-223,0.6472825728827791,-0.06245618367202843,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,bryson stott,phi,atl,-208,0.632912422155024,-0.0628027595012145,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-01,alec bohm,phi,atl,-235,0.6351088531494027,-0.09463206040404304,2026-10-01T16:13:54.920062+00:00,astra-shadow-v1,research_snapshot_timing_unverified
