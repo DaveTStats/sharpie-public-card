@@ -1,0 +1,28 @@
+date,player,team,opponent,odds,astra_probability,astra_ev,captured_at_utc,version,status
+2026-10-06,jake cronenworth,sd,mil,-131,0.5772327491751166,0.017868435568335395,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,ozzie albies,atl,lad,-125,0.5641169934031107,0.015410588125599256,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,matt olson,atl,lad,-171,0.6387498706068828,0.012287806634299736,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,sean murphy,atl,lad,-109,0.5270297658645674,0.01054331252930818,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,mike yastrzemski,atl,lad,-114,0.5382506058122488,0.010400260033519793,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,andy pages,lad,atl,-145,0.5971013329722719,0.008895355711769692,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,drake baldwin,atl,lad,-196,0.667926546706414,0.008705397066829379,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,austin riley,atl,lad,-123,0.5502114689885618,-0.0024621334597619837,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,ronald acuna jr.,atl,lad,-183,0.639948270395651,-0.010353221191424788,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,freddie freeman,lad,atl,-175,0.6252210338071511,-0.01750980401733404,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,xander bogaerts,sd,mil,-181,0.6312220225648348,-0.020036528504317253,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,shohei ohtani,lad,atl,-172,0.6196531862135684,-0.020083333429705807,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,will smith (lad),lad,atl,-159,0.5970515225751399,-0.02744437517634446,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,jake bauers,mil,sd,-144,0.5711961828384478,-0.032139801301519055,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,brice turang,mil,sd,-200,0.6449037989586663,-0.03264430156200049,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,teoscar hernandez,lad,atl,-145,0.5723950829722717,-0.03284968739167882,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,christian yelich,mil,sd,-144,0.5703024328384477,-0.03365421102374133,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,kyle tucker,lad,atl,-159,0.58970777257514,-0.03940683586816829,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,mauricio dubon,atl,lad,-187,0.6243044377507685,-0.04184292174079918,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,garrett mitchell,mil,sd,-144,0.5645649328384477,-0.043376086023741434,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,ty france,sd,mil,-226,0.6599462324964986,-0.04804216020416563,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,jackson merrill,sd,mil,-215,0.6463778068951743,-0.0529813526884656,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,mookie betts,lad,atl,-200,0.6271475489586664,-0.059278676562000365,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,william contreras,mil,sd,-215,0.6390028068951743,-0.06378658524660508,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,manny machado,sd,mil,-229,0.6510260317347554,-0.06468312471294957,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,sal frelick,mil,sd,-182,0.599109251086326,-0.07170984172338501,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-06,jackson chourio,mil,sd,-243,0.6540041208731464,-0.07685838082514729,2026-10-06T16:14:17.303281+00:00,astra-shadow-v1,research_snapshot_timing_unverified
