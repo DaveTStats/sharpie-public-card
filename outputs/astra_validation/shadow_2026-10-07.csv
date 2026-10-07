@@ -1,0 +1,53 @@
+date,player,team,opponent,odds,astra_probability,astra_ev,captured_at_utc,version,status
+2026-10-07,taylor walls,tb,nyy,117,0.47927360418316023,0.040023721077457663,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,sean murphy,atl,lad,114,0.48118496745246564,0.029735830348276204,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,ryan vilade,tb,nyy,-116,0.5499086261579,0.023967786638848354,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,jonny deluca,tb,nyy,-125,0.5635178854171592,0.01433219375088668,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,brice turang,mil,sd,-203,0.6752611059892164,0.007902044900160554,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,andy pages,lad,atl,-158,0.6167791580269784,0.007145713740255744,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,austin riley,atl,lad,-103,0.5100096889201697,0.005164726706742284,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,colson montgomery,cws,cle,-123,0.5537936110026102,0.0040323191348135,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,munetaka murakami,cws,cle,-144,0.5919220748524963,0.0029790712778408057,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,mike yastrzemski,atl,lad,-104,0.5099670684236952,0.00032001883109455953,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,jake cronenworth,sd,mil,-135,0.5733491501925729,-0.0019477755907063576,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,luis campusano,sd,mil,-141,0.5823024779713317,-0.004717041197936478,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,drake baldwin,atl,lad,-172,0.6290353282276168,-0.005246457686559403,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,trent grisham,nyy,tb,-153,0.6011678991413578,-0.005911905341414947,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,patrick bailey,cle,cws,-137,0.5740883935043604,-0.006868983499756176,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,cody bellinger,nyy,tb,-195,0.6549735822156526,-0.009142529468628147,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,ben rice,nyy,tb,-242,0.6974600272300248,-0.014333349947651008,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,jake bauers,mil,sd,-163,0.6105447891983169,-0.014887855465292366,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,miguel vargas,cws,cle,-204,0.6610101734288552,-0.014965231753078623,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,travis bazzana,cle,cws,-156,0.5999901076393814,-0.01540084900204075,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,sam antonacci,cws,cle,-209,0.6635715599047536,-0.018930086073833174,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,ronald acuna jr.,atl,lad,-166,0.6115951828273514,-0.01997398414412377,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,xander bogaerts,sd,mil,-166,0.6108451828273513,-0.021175791373039488,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,william contreras,mil,sd,-221,0.673270617763992,-0.02208204388126056,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,freddie freeman,lad,atl,-224,0.6746816199850605,-0.024121228235894687,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,matt olson,atl,lad,-172,0.6167353282276168,-0.0246976204772571,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,christian yelich,mil,sd,-175,0.6195094258211997,-0.026485187995257564,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,garrett mitchell,mil,sd,-159,0.5968086645891884,-0.027839974033963655,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,yandy diaz,tb,nyy,-216,0.6644497595381156,-0.027934611046090185,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,jonathan aranda,tb,nyy,-193,0.638560393475559,-0.03057929902415124,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,junior caminero,tb,nyy,-201,0.6466021508287503,-0.03170523681863768,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,ozzie albies,atl,lad,-140,0.5643567743060481,-0.03253124404677454,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,kyle tucker,lad,atl,-164,0.600389918245442,-0.033518668190264056,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,sal frelick,mil,sd,-182,0.6234288931003744,-0.03402775904227695,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,shohei ohtani,lad,atl,-216,0.6598185095381156,-0.03470995826831236,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,brayan rocchio,cle,cws,-171,0.6090257626209312,-0.03481882064168207,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,angel martinez,cle,cws,-179,0.6179661381053312,-0.03680138250621556,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,jackson merrill,sd,mil,-176,0.6139931873495263,-0.037147047110969944,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,chase delauter,cle,cws,-226,0.666284624510547,-0.03889916995381271,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,ty france,sd,mil,-196,0.6353086887204626,-0.040554225197668714,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,mauricio dubon,atl,lad,-161,0.5901817264133278,-0.04324577270882901,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,spencer jones,nyy,tb,-163,0.5929447891983168,-0.043285401477562435,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,will smith (lad),lad,atl,-200,0.6377546909727148,-0.04336796354092787,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,teoscar hernandez,lad,atl,-180,0.6124561790679529,-0.047290388116517645,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,fernando tatis jr.,sd,mil,-263,0.6848053108074255,-0.05481244173727973,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,jose ramirez,cle,cws,-247,0.6714541386192086,-0.05670208056329806,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,anthony volpe,nyy,tb,-154,0.5712897139385941,-0.057742939348033206,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,manny machado,sd,mil,-202,0.6279084437320966,-0.061245792044093195,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,chase meidroth,cws,cle,-220,0.6387526076393815,-0.07090529797908152,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,steven kwan,cle,cws,-251,0.6584899651892391,-0.07916343513377322,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,jazz chisholm,nyy,tb,-182,0.5938663931003744,-0.07983339091040886,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-07,chandler simpson,tb,nyy,-235,0.6421363762960979,-0.08461410187577545,2026-10-07T16:42:35.820840+00:00,astra-shadow-v1,research_snapshot_timing_unverified
