@@ -1,0 +1,13 @@
+date,player,team,opponent,odds,astra_probability,astra_ev,captured_at_utc,version,status
+2026-10-08,munetaka murakami,cws,cle,-127,0.5709340387933126,0.020488400047889543,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,colson montgomery,cws,cle,-110,0.5342718678786913,0.019973565950228922,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,patrick bailey,cle,cws,-126,0.563028167920832,0.009875920238952451,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,travis bazzana,cle,cws,-138,0.5839018223604839,0.0070190849405449285,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,randal grichuk,cws,cle,-143,0.5890557891015014,0.0009829143473063517,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,miguel vargas,cws,cle,-168,0.621993691794825,-0.007771967851112449,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,brayan rocchio,cle,cws,-146,0.5852650734536042,-0.013868437879543505,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,angel martinez,cle,cws,-151,0.5928701687229334,-0.014500580467176838,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,chase delauter,cle,cws,-222,0.6644688528683393,-0.0362208530468231,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,jose ramirez,cle,cws,-218,0.6572094015714136,-0.0413183958728921,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,steven kwan,cle,cws,-231,0.6493034541612406,-0.06961279944861198,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-08,chase meidroth,cws,cle,-216,0.6320517578726635,-0.07533168755665887,2026-10-08T16:52:04.430240+00:00,astra-shadow-v1,research_snapshot_timing_unverified
