@@ -1,0 +1,15 @@
+date,player,team,opponent,odds,astra_probability,astra_ev,captured_at_utc,version,status
+2026-10-10,colson montgomery,cws,cle,132,0.4847105988789573,0.12452858939918099,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,andrew benintendi,cws,cle,121,0.5001127013910497,0.10524907007421969,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,munetaka murakami,cws,cle,-121,0.5659052636082442,0.03359556411092535,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,travis bazzana,cle,cws,-136,0.5836039507199859,0.012724502719975606,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,patrick bailey,cle,cws,-137,0.5761478933646259,-0.0033061990699537747,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,miguel vargas,cws,cle,-166,0.6205734326876169,-0.0055871500306862165,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,brayan rocchio,cle,cws,-142,0.5832067872517132,-0.006084207641446571,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,angel martinez,cle,cws,-153,0.5962711490016233,-0.014009145768557718,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,sam antonacci,cws,cle,-210,0.6623967849190018,-0.022176174643378288,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,chase meidroth,cws,cle,-147,0.5798767077020761,-0.02564934148018516,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,tristan peters,cws,cle,-150,0.584174607499647,-0.02637565416725507,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,jose ramirez,cle,cws,-199,0.6444192772320885,-0.0317519402392239,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,chase delauter,cle,cws,-235,0.6727333761563634,-0.040997102074971314,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-10,steven kwan,cle,cws,-239,0.6550507321309154,-0.07086946363020796,2026-10-10T16:03:07.247732+00:00,astra-shadow-v1,research_snapshot_timing_unverified
