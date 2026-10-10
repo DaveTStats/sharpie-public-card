@@ -24,3 +24,4 @@ date,player,team,opponent,game_pk,player_id,odds,start_utc,captured_at_utc,lineu
 2026-10-05,José Ramírez,CLE,CWS,849834,608070,-224.0,2026-10-05T21:00:00+00:00,2026-10-05T18:00:31.480556+00:00,True,scout-select-v1,Resolved,0.6114,0.0,-1.0
 2026-10-06,Drake Baldwin,ATL,LAD,849819,686948,-197.0,2026-10-06T22:00:00+00:00,2026-10-06T19:01:04.673629+00:00,True,scout-select-v1,Resolved,0.5833,0.0,-1.0
 2026-10-07,Freddie Freeman,LAD,ATL,849822,518692,-248.0,2026-10-07T22:00:00+00:00,2026-10-07T19:00:52.587133+00:00,True,scout-select-v1,Resolved,0.6326,0.0,-1.0
+2026-10-10,José Ramírez,CLE,CWS,849831,608070,-205.0,2026-10-11T00:00:00+00:00,2026-10-10T20:01:14.526621+00:00,True,scout-select-v1,Paper Locked,0.5921,,
