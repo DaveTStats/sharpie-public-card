@@ -1,0 +1,28 @@
+date,player,team,opponent,odds,astra_probability,astra_ev,captured_at_utc,version,status
+2026-10-12,patrick bailey,cle,tb,-104,0.5342068173879542,0.04786721872252553,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,brice turang,mil,lad,-162,0.6420214119471519,0.03833092549477657,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,garrett mitchell,mil,lad,-108,0.5386202412190251,0.03734268679219643,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,jake bauers,mil,lad,-122,0.5663796313784153,0.03062523086891966,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,travis bazzana,cle,tb,-121,0.5638230127122378,0.02979244470582265,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,andy pages,lad,mil,-142,0.5956245363557067,0.015078435197753537,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,brayan rocchio,cle,tb,-123,0.5597458599668692,0.014823794899283094,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,angel martinez,cle,tb,-137,0.5776406424686193,-0.00072385207983372,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,richie palacios,tb,cle,-141,0.5830422269355907,-0.00345264757817465,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,sal frelick,mil,lad,-139,0.5769373356831384,-0.007999832890143277,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,shohei ohtani,lad,mil,-172,0.6206563271918757,-0.018496970952382563,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,kyle tucker,lad,mil,-135,0.563613899156832,-0.018894323689959136,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,ryan vilade,tb,cle,-158,0.6006876569912374,-0.019130281621903444,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,freddie freeman,lad,mil,-182,0.6315686420646334,-0.02141562053721635,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,junior caminero,tb,cle,-231,0.6808162047909516,-0.0244581654294157,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,jose ramirez,cle,tb,-182,0.6295936420646333,-0.024475785372381376,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,chase delauter,cle,tb,-201,0.6490043997930093,-0.02810783911594139,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,christian yelich,mil,lad,-175,0.6174991747854586,-0.02964415390856512,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,william contreras,mil,lad,-202,0.6484544426963557,-0.03052850646386429,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,jonny deluca,tb,cle,-177,0.6186494414411856,-0.03183110011746648,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,teoscar hernandez,lad,mil,-151,0.5816454193526445,-0.03315893869196185,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,will smith (lad),lad,mil,-168,0.605693942424536,-0.03377394898943065,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,jonathan aranda,tb,cle,-219,0.6625525446914148,-0.03491204677369264,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,taylor walls,tb,cle,-140,0.5627465232703072,-0.03529167439375902,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,jackson chourio,mil,lad,-242,0.6712497761942837,-0.05137428322956605,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,mookie betts,lad,mil,-221,0.6411041167282511,-0.06880352276122814,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-12,steven kwan,cle,tb,-232,0.6475774469650863,-0.07329434313616967,2026-10-12T16:05:37.742768+00:00,astra-shadow-v1,research_snapshot_timing_unverified
