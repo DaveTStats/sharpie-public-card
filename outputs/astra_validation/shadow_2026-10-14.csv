@@ -1,0 +1,14 @@
+date,player,team,opponent,odds,astra_probability,astra_ev,captured_at_utc,version,status
+2026-10-14,brice turang,mil,lad,-153,0.6357745197460092,0.05131342154078644,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,jake bauers,mil,lad,-131,0.5776215117938165,0.018553963544821306,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,andrew vaughn,mil,lad,-144,0.5960474454571477,0.009969282580166938,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,garrett mitchell,mil,lad,-127,0.5627074110634163,0.0057841126881534866,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,william contreras,mil,lad,-180,0.6342815496726044,-0.013339811620393105,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,shohei ohtani,lad,mil,-188,0.6394793671329217,-0.020372033328290073,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,andy pages,lad,mil,-192,0.6421763515317042,-0.023356798712199867,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,freddie freeman,lad,mil,-221,0.6716209883686435,-0.024478111917038192,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,will smith (lad),lad,mil,-192,0.6315513515317042,-0.03951565287886649,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,jackson chourio,mil,lad,-225,0.6642693243978791,-0.04049986475861911,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,kyle tucker,lad,mil,-172,0.6050106988322683,-0.04323889486990118,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,teoscar hernandez,lad,mil,-220,0.635684228244033,-0.07536839528140649,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-14,mookie betts,lad,mil,-255,0.6634391578214978,-0.07638862342497377,2026-10-14T16:03:37.139843+00:00,astra-shadow-v1,research_snapshot_timing_unverified
