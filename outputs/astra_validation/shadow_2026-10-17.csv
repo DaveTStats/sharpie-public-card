@@ -1,0 +1,15 @@
+date,player,team,opponent,odds,astra_probability,astra_ev,captured_at_utc,version,status
+2026-10-17,taylor walls,tb,cle,107,0.4915980164813938,0.017607894116485223,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,brayan rocchio,cle,tb,-128,0.570216377147552,0.01569792179407714,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,travis bazzana,cle,tb,-136,0.5845939659819261,0.014442470380401362,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,petey halpin,cle,tb,-124,0.5606815870473014,0.01284415724673793,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,patrick bailey,cle,tb,-134,0.5742394090863734,0.002776281538890757,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,richie palacios,tb,cle,-130,0.5631733184137611,-0.0036164366525766045,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,chase delauter,cle,tb,-198,0.6605481378622582,-0.005841691500237611,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,jose ramirez,cle,tb,-191,0.6421870669196628,-0.021589337834440614,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,jonathan aranda,tb,cle,-181,0.6271411797010888,-0.02637198068504998,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,junior caminero,tb,cle,-202,0.6472017088543023,-0.032401405574260966,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,jonny deluca,tb,cle,-172,0.6090785933498224,-0.036805945400280815,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,yandy diaz,tb,cle,-234,0.6739140239591919,-0.03808852990440137,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,steven kwan,cle,tb,-224,0.648618635107266,-0.06181947421984735,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-17,chandler simpson,tb,cle,-269,0.6574257677480368,-0.09817803606310194,2026-10-17T16:03:11.897140+00:00,astra-shadow-v1,research_snapshot_timing_unverified
