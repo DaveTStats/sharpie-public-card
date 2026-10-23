@@ -1,0 +1,14 @@
+date,player,team,opponent,odds,astra_probability,astra_ev,captured_at_utc,version,status
+2026-10-23,richie palacios,tb,mil,104,0.5181056732396451,0.056935573408875895,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,taylor walls,tb,mil,122,0.469901609249184,0.04318157253318833,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,jonathan aranda,tb,mil,-146,0.5958368515036336,0.0039442840403689505,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,brice turang,mil,tb,-211,0.6754296798438946,-0.004461467149520337,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,junior caminero,tb,mil,-161,0.6119242527979052,-0.007998571551222078,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,jonny deluca,tb,mil,-138,0.5734048504105135,-0.011084388422447744,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,jake bauers,mil,tb,-156,0.5997201340239589,-0.015843882627349593,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,christian yelich,mil,tb,-168,0.6086842198448543,-0.02900374453320853,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,sal frelick,mil,tb,-162,0.5974741893674703,-0.03371458262791838,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,garrett mitchell,mil,tb,-172,0.6071153546121941,-0.039910602008623175,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,william contreras,mil,tb,-224,0.6612991463696378,-0.043478020429631004,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,yandy diaz,tb,mil,-242,0.6747963036146021,-0.046362248610768986,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
+2026-10-23,chandler simpson,tb,mil,-216,0.6288047859226931,-0.08008188726124532,2026-10-23T16:08:05.929191+00:00,astra-shadow-v1,research_snapshot_timing_unverified
